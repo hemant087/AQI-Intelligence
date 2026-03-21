@@ -80,7 +80,7 @@ Whether you are a React Native expert or a hardware enthusiast, your contributio
 
 | **Dashboard** | **Official Monitors** | **Map View** |
 | :---: | :---: | :---: |
-| ![Dashboard](assets/screenshots/dashboard.jpg) | ![Monitors](assets/screenshots/monitors.jpg) | ![Map](assets/screenshots/map.jpg) |
+| ![Dashboard](assets/screenshots/dashboard.png) | ![Monitors](assets/screenshots/monitors.png) | ![Map](assets/screenshots/map.png) |
 
 ---
 
