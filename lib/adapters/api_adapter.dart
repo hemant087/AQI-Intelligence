@@ -7,24 +7,26 @@ class ApiAdapter extends DeviceAdapter {
   final String deviceToken;
   final String endpointUrl;
   final Dio _dio = Dio();
-  
+
   DeviceConnectionState _connectionState = DeviceConnectionState.disconnected;
-  final _connectionStateController = StreamController<DeviceConnectionState>.broadcast();
+  final _connectionStateController =
+      StreamController<DeviceConnectionState>.broadcast();
   final _readingsController = StreamController<AQIReading>.broadcast();
   Timer? _pollingTimer;
 
   ApiAdapter({
-    required String adapterId,
-    required String adapterName,
+    required super.adapterId,
+    required super.adapterName,
     required this.deviceToken,
     required this.endpointUrl,
-  }) : super(adapterId: adapterId, adapterName: adapterName);
+  });
 
   @override
   DeviceConnectionState get connectionState => _connectionState;
 
   @override
-  Stream<DeviceConnectionState> get connectionStateStream => _connectionStateController.stream;
+  Stream<DeviceConnectionState> get connectionStateStream =>
+      _connectionStateController.stream;
 
   @override
   Stream<AQIReading> get readingsStream => _readingsController.stream;
@@ -39,9 +41,8 @@ class ApiAdapter extends DeviceAdapter {
     _updateState(DeviceConnectionState.connecting);
     try {
       // Simulate validation request
-      final response = await _dio.get('$endpointUrl/ping', options: Options(
-        headers: {'Authorization': 'Bearer $deviceToken'}
-      ));
+      final response = await _dio.get('$endpointUrl/ping',
+          options: Options(headers: {'Authorization': 'Bearer $deviceToken'}));
       if (response.statusCode == 200) {
         _updateState(DeviceConnectionState.connected);
         _startPolling();
@@ -59,16 +60,16 @@ class ApiAdapter extends DeviceAdapter {
 
   void _startPolling() {
     _pollingTimer = Timer.periodic(const Duration(minutes: 5), (timer) async {
-       try {
-         final response = await _dio.get('$endpointUrl/latest', options: Options(
-           headers: {'Authorization': 'Bearer $deviceToken'}
-         ));
-         if (response.data != null) {
-           _readingsController.add(AQIReading.fromMap(response.data));
-         }
-       } catch (e) {
-         // Handle or log polling error quietly
-       }
+      try {
+        final response = await _dio.get('$endpointUrl/latest',
+            options:
+                Options(headers: {'Authorization': 'Bearer $deviceToken'}));
+        if (response.data != null) {
+          _readingsController.add(AQIReading.fromMap(response.data));
+        }
+      } catch (e) {
+        // Handle or log polling error quietly
+      }
     });
   }
 
