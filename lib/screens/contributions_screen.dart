@@ -69,9 +69,9 @@ class _StatBox extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: const BorderRadius.all(Radius.circular(20)),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [
@@ -98,11 +98,11 @@ class _AlertCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: color.withOpacity(0.05),
+      color: color.withValues(alpha: 0.05),
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: const BorderRadius.all(Radius.circular(16)), 
-        side: BorderSide(color: color.withOpacity(0.2))
+        side: BorderSide(color: color.withValues(alpha: 0.2))
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),

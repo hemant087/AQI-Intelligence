@@ -39,7 +39,7 @@ class DeviceManagerScreen extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16), 
-        side: BorderSide(color: Colors.grey.withOpacity(0.2))
+        side: BorderSide(color: Colors.grey.withValues(alpha: 0.2))
       ),
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
@@ -47,7 +47,7 @@ class DeviceManagerScreen extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: (isConnected ? Colors.blue : Colors.grey).withOpacity(0.1),
+            color: (isConnected ? Colors.blue : Colors.grey).withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: Icon(

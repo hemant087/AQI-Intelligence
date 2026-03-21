@@ -36,9 +36,9 @@ class DashboardScreen extends ConsumerWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(32.0),
                 decoration: BoxDecoration(
-                  color: levelColor.withOpacity(0.1),
+                  color: levelColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: levelColor.withOpacity(0.5), width: 2),
+                  border: Border.all(color: levelColor.withValues(alpha: 0.5), width: 2),
                 ),
                 child: Column(
                   children: [
@@ -93,7 +93,7 @@ class DashboardScreen extends ConsumerWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16), 
-        side: BorderSide(color: Colors.grey.withOpacity(0.2))
+        side: BorderSide(color: Colors.grey.withValues(alpha: 0.2))
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -102,7 +102,7 @@ class DashboardScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: Colors.blue.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.health_and_safety, size: 32, color: Colors.blue),
@@ -129,7 +129,7 @@ class DashboardScreen extends ConsumerWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16), 
-        side: BorderSide(color: Colors.grey.withOpacity(0.2))
+        side: BorderSide(color: Colors.grey.withValues(alpha: 0.2))
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -138,7 +138,7 @@ class DashboardScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.purple.withOpacity(0.1),
+                color: Colors.purple.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.cloud_sync, size: 32, color: Colors.purple),
