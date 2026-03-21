@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/map_screen.dart';
 import 'screens/device_manager_screen.dart';
-import 'screens/contributions_screen.dart';
+import 'screens/news_ranking_screen.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -18,7 +18,8 @@ class _MainNavigationState extends State<MainNavigation> {
     const DashboardScreen(),
     const MapScreen(),
     const DeviceManagerScreen(),
-    const ContributionsScreen(),
+    const NewsRankingScreen(),
+    const Center(child: Text('Shop coming soon')),
   ];
 
   @override
@@ -33,9 +34,9 @@ class _MainNavigationState extends State<MainNavigation> {
         onDestinationSelected: (index) => setState(() => _currentIndex = index),
         destinations: const [
           NavigationDestination(
-            icon: Icon(Icons.dashboard_outlined), 
-            selectedIcon: Icon(Icons.dashboard), 
-            label: 'Home'
+            icon: Icon(Icons.cloud_outlined), 
+            selectedIcon: Icon(Icons.cloud), 
+            label: 'My Air'
           ),
           NavigationDestination(
             icon: Icon(Icons.map_outlined), 
@@ -43,14 +44,19 @@ class _MainNavigationState extends State<MainNavigation> {
             label: 'Map'
           ),
           NavigationDestination(
-            icon: Icon(Icons.bluetooth_connected_outlined), 
-            selectedIcon: Icon(Icons.bluetooth_connected), 
-            label: 'Devices'
+            icon: Icon(Icons.health_and_safety_outlined), 
+            selectedIcon: Icon(Icons.health_and_safety), 
+            label: 'Exposure'
           ),
           NavigationDestination(
-            icon: Icon(Icons.stars_outlined), 
-            selectedIcon: Icon(Icons.stars), 
-            label: 'Contributions'
+            icon: Icon(Icons.article_outlined), 
+            selectedIcon: Icon(Icons.article), 
+            label: 'News & Rank'
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.shopping_cart_outlined), 
+            selectedIcon: Icon(Icons.shopping_cart), 
+            label: 'Shop'
           ),
         ],
       ),

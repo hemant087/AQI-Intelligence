@@ -32,6 +32,15 @@ export class BleAdapter {
 
   async startScan(onDeviceFound: (device: Device) => void) {
     if (!this.manager) return;
+    
+    // Explicit permission check for Android/iOS
+    const { locationService } = await import('../services/LocationService');
+    const granted = await locationService.requestPermissions();
+    if (!granted) {
+      console.warn('Location permissions not granted - BLE scanning will likely fail.');
+      return;
+    }
+
     const state = await this.manager.state();
     if (state !== State.PoweredOn) {
       console.warn('Bluetooth is not powered on');

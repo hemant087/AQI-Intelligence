@@ -21,10 +21,10 @@ export default function DeviceManagerScreen() {
       });
     });
 
-    // Stop scan after 10 seconds
+    // Stop scan after 30 seconds
     setTimeout(() => {
       stopScan();
-    }, 10000);
+    }, 30000);
   };
 
   const stopScan = () => {
@@ -85,7 +85,7 @@ export default function DeviceManagerScreen() {
             renderItem={({ item }) => (
               <TouchableOpacity style={styles.scanResultItem} onPress={() => connectToDevice(item)}>
                 <MaterialCommunityIcons name="bluetooth-audio" size={20} color="#666" />
-                <Text style={styles.scanResultName}>{item.name || 'Unknown Device'}</Text>
+                <Text style={styles.scanResultName}>{item.name || `Unnamed Device (${item.id.slice(-4)})`}</Text>
                 <Text style={styles.scanResultId}>{item.id}</Text>
               </TouchableOpacity>
             )}
