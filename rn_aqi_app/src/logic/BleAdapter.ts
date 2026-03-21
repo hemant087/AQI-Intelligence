@@ -1,5 +1,5 @@
 import { BleManager, Device, State } from 'react-native-ble-plx';
-import { Platform } from 'react-native';
+import { Platform, PermissionsAndroid } from 'react-native';
 import { AQIReading } from '../models/AqiReading';
 import { Subject, Observable } from 'rxjs';
 
@@ -30,10 +30,31 @@ export class BleAdapter {
     return this.readingsSubject.asObservable();
   }
 
+  async requestBluetoothPermissions(): Promise<boolean> {
+    if (Platform.OS === 'android' && (Platform.Version as number) >= 31) {
+      const granted = await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+        PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+      ]);
+      return (
+        granted['android.permission.BLUETOOTH_SCAN'] === PermissionsAndroid.RESULTS.GRANTED &&
+        granted['android.permission.BLUETOOTH_CONNECT'] === PermissionsAndroid.RESULTS.GRANTED
+      );
+    }
+    return true;
+  }
+
   async startScan(onDeviceFound: (device: Device) => void) {
     if (!this.manager) return;
     
-    // Explicit permission check for Android/iOS
+    // Request Android 12+ Bluetooth permissions
+    const bleGranted = await this.requestBluetoothPermissions();
+    if (!bleGranted) {
+      console.warn('Bluetooth permissions not granted - cannot scan.');
+      return;
+    }
+
+    // Explicit permission check for Android/iOS location
     const { locationService } = await import('../services/LocationService');
     const granted = await locationService.requestPermissions();
     if (!granted) {
