@@ -1,9 +1,9 @@
-# 🌍 AQI Intelligence: AI-Driven Urban Air Pollution Platform
+# AI-Driven Urban Air Pollution Platform
 
 Welcome to **AQI Intelligence**, an AI-driven urban air pollution intelligence platform currently focused on **Delhi NCR**. This project is designed to solve a critical gap in current air-quality monitoring systems by significantly increasing spatial resolution through crowdsourced environmental data collection.
 
 ## 🚨 The Problem
-At present, Delhi NCR relies on around 46 high-accuracy CPCB monitoring stations, each covering approximately 0.5–1 km. While these stations provide reliable data, they are not sufficient to capture hyperlocal pollution variations across a dense and complex urban environment. This leads to missed pollution hotspots and limited real-time decision-making capability.
+At present, Delhi NCR relies on around 46 high-accuracy CPCB monitoring stations, each covering approximately 1–1.5 km. While these stations provide reliable data, they are not sufficient to capture hyperlocal pollution variations across a dense and complex urban environment. This leads to missed pollution hotspots and limited real-time decision-making capability.
 
 ## 💡 Our Vision & Solution
 To address this, we are developing a **hybrid, device-agnostic air-quality data platform** that integrates multiple data sources, including government monitoring stations, personal AQI monitoring devices, and open-source low-cost sensor networks.
