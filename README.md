@@ -74,9 +74,10 @@ We are building a highly collaborative, interdisciplinary team. Here is how you 
 
 | **Dashboard** | **Official Monitors** | **Map View** |
 | :---: | :---: | :---: |
-| ![Dashboard](https://via.placeholder.com/300x600.png?text=OpenAQI+Dashboard) | ![Monitors](https://via.placeholder.com/300x600.png?text=Official+Monitors) | ![Map](https://via.placeholder.com/300x600.png?text=Live+Pollution+Map) |
+| ![Dashboard](rn_aqi_app/assets/screenshots/dashboard.jpg)| ![Monitors](rn_aqi_app/assets/screenshots/monitors.jpg) | ![Map](rn_aqi_app/assets/screenshots/map.jpg) |
 
 ---
+
 
 *Let's clean the air, together!* 💨
 
