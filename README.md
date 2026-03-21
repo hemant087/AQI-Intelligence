@@ -74,7 +74,7 @@ We are building a highly collaborative, interdisciplinary team. Here is how you 
 
 | **Dashboard** | **Official Monitors** | **Map View** |
 | :---: | :---: | :---: |
-| ![Dashboard](rn_aqi_app/assets/screenshots/dashboard.jpg)| ![Monitors](rn_aqi_app/assets/screenshots/monitors.jpg) | ![Map](rn_aqi_app/assets/screenshots/map.jpg) |
+| <img src="rn_aqi_app/assets/screenshots/dashboard.png" width="260"> | <img src="rn_aqi_app/assets/screenshots/monitors.png" width="260"> | <img src="rn_aqi_app/assets/screenshots/map.png" width="260"> |
 
 ---
 
