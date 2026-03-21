@@ -76,4 +76,12 @@ Whether you are a React Native expert or a hardware enthusiast, your contributio
 
 ---
 
+## 📱 Screenshots
+
+| **Dashboard** | **Official Monitors** | **Map View** |
+| :---: | :---: | :---: |
+| ![Dashboard](https://via.placeholder.com/300x600.png?text=OpenAQI+Dashboard) | ![Monitors](https://via.placeholder.com/300x600.png?text=Official+Monitors) | ![Map](https://via.placeholder.com/300x600.png?text=Live+Pollution+Map) |
+
+---
+
 *Let's build the ultimate open-source tool for tracking the air we breathe!* 💨
