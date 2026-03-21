@@ -5,19 +5,51 @@ import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { locationService } from '../../src/services/LocationService';
 import { governmentAqiService } from '../../src/services/GovernmentAqiService';
 import { getAQILevel } from '../../src/models/AqiReading';
+import * as Location from 'expo-location';
 
 export default function DashboardScreen() {
-  const { latestReading, aqiInfo, healthRecommendation, connectionState } = useAqiData();
+  const { latestReading, aqiScore, aqiInfo, healthRecommendation, connectionState } = useAqiData();
   const [nearestStation, setNearestStation] = useState<any>(null);
+  const [liveAddress, setLiveAddress] = useState<string>('Locating...');
+  const [userCoords, setUserCoords] = useState<{latitude: number; longitude: number} | null>(null);
 
   useEffect(() => {
     const initLocation = async () => {
-      await locationService.requestPermissions();
+      const hasPerms = await locationService.requestPermissions();
+      if (hasPerms) {
+        const loc = await locationService.getCurrentPosition();
+        if (loc) {
+          setUserCoords({ latitude: loc.coords.latitude, longitude: loc.coords.longitude });
+          const addressData = await Location.reverseGeocodeAsync(loc.coords);
+          if (addressData && addressData.length > 0) {
+            const addr = addressData[0];
+            const city = addr.city || addr.district || addr.subregion || 'Unknown City';
+            const region = addr.region || addr.country || '';
+            setLiveAddress(`${city}, ${region}`.trim());
+          } else {
+            setLiveAddress('Location found');
+          }
+        }
+      } else {
+        setLiveAddress('No GPS access');
+      }
+
       const station = await governmentAqiService.fetchNearestStation();
       if (station) setNearestStation(station);
     };
     initLocation();
   }, []);
+
+  const getDistanceText = () => {
+    if (!userCoords || !nearestStation?.latitude || !nearestStation?.longitude) return '';
+    const dist = locationService.calculateDistance(
+      userCoords.latitude, 
+      userCoords.longitude, 
+      nearestStation.latitude, 
+      nearestStation.longitude
+    );
+    return `Nearest Monitor : ${dist.toFixed(2)} km`;
+  };
 
   const getLightColor = (color: string) => `${color}20`; // 12% opacity hex
 
@@ -46,7 +78,7 @@ export default function DashboardScreen() {
         {/* Main AQI Card */}
         <View style={styles.mainCard}>
           <Text style={styles.aqiLabel}>US AQI</Text>
-          <Text style={styles.aqiValue}>{latestReading ? latestReading.pm25.toFixed(0) : '--'}</Text>
+          <Text style={styles.aqiValue}>{aqiScore !== null ? aqiScore : '--'}</Text>
           <View style={[styles.levelBadge, { backgroundColor: aqiInfo.color }]}>
             <Text style={styles.levelText}>{aqiInfo.level}</Text>
           </View>
@@ -62,31 +94,52 @@ export default function DashboardScreen() {
           <Text style={styles.healthBody}>{healthRecommendation}</Text>
         </View>
 
-        {/* Nearest Official Station Card */}
-        {nearestStation && (
-          <View style={styles.secondaryCard}>
+        {/* Split Cards: Live Location & Nearest Station */}
+        <View style={styles.splitCardsRow}>
+          
+          {/* Live Location Card (Left) */}
+          <View style={[styles.secondaryCard, styles.splitCard]}>
             <View style={styles.secondaryHeader}>
-              <MaterialCommunityIcons name="office-building" size={20} color="#666" />
-              <Text style={styles.secondaryTitle}>Nearest Official Monitor</Text>
+              <MaterialCommunityIcons name="crosshairs-gps" size={18} color="#00B0FF" />
+              <Text style={styles.secondaryTitle}>Live Address</Text>
             </View>
-            <View style={styles.secondaryBody}>
-              <View>
-                <Text style={styles.stationName} numberOfLines={1}>{nearestStation.name}</Text>
-                <Text style={styles.stationTime}>Last updated: {nearestStation.time.split(' ')[1] || 'Today'}</Text>
-              </View>
-              <View style={[styles.stationAqi, { backgroundColor: getAQILevel(nearestStation.aqi).color }]}>
-                <Text style={styles.stationAqiValue}>{nearestStation.aqi}</Text>
-              </View>
+            <View style={styles.secondaryBodyColumn}>
+              <Text style={styles.stationName} numberOfLines={2}>{liveAddress}</Text>
+              <Text style={styles.stationTime}>{getDistanceText() || 'GPS Active'}</Text>
             </View>
           </View>
-        )}
+
+          {/* Nearest Official Station Card (Right) */}
+          {nearestStation && (
+            <View style={[styles.secondaryCard, styles.splitCard]}>
+              <View style={styles.secondaryHeader}>
+                <MaterialCommunityIcons name="office-building" size={18} color="#666" />
+                <Text style={styles.secondaryTitle}>Official Monitor</Text>
+              </View>
+              <View style={[styles.secondaryBody, {marginTop: 4}]}>
+                <View style={{ flex: 1, paddingRight: 6 }}>
+                  <Text style={[styles.stationName, {fontSize: 13}]} numberOfLines={2}>{nearestStation.name}</Text>
+                </View>
+                <View style={[styles.stationAqi, { backgroundColor: getAQILevel(nearestStation.aqi).color }]}>
+                  <Text style={styles.stationAqiValue}>{nearestStation.aqi}</Text>
+                </View>
+              </View>
+            </View>
+          )}
+
+        </View>
 
         {/* Details Grid */}
         <View style={styles.detailsGrid}>
           <DetailItem 
+            icon={<MaterialCommunityIcons name="blur" size={24} color="#555" />}
+            label="PM2.5"
+            value={latestReading ? `${latestReading.pm25.toFixed(1)} µg/m³` : '--'}
+          />
+          <DetailItem 
             icon={<MaterialCommunityIcons name="molecule" size={24} color="#555" />}
             label="PM10"
-            value={latestReading?.pm10 ? `${latestReading.pm10} µg/m³` : '--'}
+            value={latestReading?.pm10 ? `${latestReading.pm10.toFixed(1)} µg/m³` : '--'}
           />
           <DetailItem 
             icon={<FontAwesome5 name="thermometer-half" size={24} color="#555" />}
@@ -97,11 +150,6 @@ export default function DashboardScreen() {
             icon={<MaterialCommunityIcons name="water-percent" size={24} color="#555" />}
             label="Humidity"
             value="45%"
-          />
-          <DetailItem 
-            icon={<MaterialCommunityIcons name="weather-windy" size={24} color="#555" />}
-            label="Wind"
-            value="12 km/h"
           />
         </View>
 
@@ -232,11 +280,16 @@ const styles = StyleSheet.create({
   detailItem: {
     width: '48%',
     backgroundColor: 'white',
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 3,
   },
   detailText: {
     marginLeft: 12,
@@ -267,34 +320,46 @@ const styles = StyleSheet.create({
     color: '#999',
     fontWeight: '500',
   },
+  splitCardsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'stretch',
+    marginBottom: 20,
+  },
   secondaryCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    marginHorizontal: 20,
-    marginTop: 20,
+    backgroundColor: 'white',
     borderRadius: 20,
     padding: 16,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 3,
   },
+  splitCard: {
+    width: '48%',
+  },
   secondaryHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   secondaryTitle: {
-    fontSize: 14,
+    fontSize: 11,
     fontWeight: 'bold',
     color: '#666',
-    marginLeft: 8,
+    marginLeft: 6,
     textTransform: 'uppercase',
   },
   secondaryBody: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  secondaryBodyColumn: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    marginTop: 8,
   },
   stationName: {
     fontSize: 16,

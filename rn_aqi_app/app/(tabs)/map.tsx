@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, Text, Platform } from 'react-native';
+import { StyleSheet, View, Text, Platform, TouchableOpacity } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
 import { useAqiData } from '../../src/hooks/useAqiData';
 
 // Conditional imports to avoid web crashes
@@ -34,8 +35,23 @@ export default function MapScreen() {
     longitudeDelta: 0.1,
   };
 
+  // TEMPORARY FIX: Return a placeholder instead of MapView to prevent the 
+  // "API Key not found" IllegalStateException hard crash on Android.
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, styles.webPlaceholder]}>
+      <Text style={styles.overlayTitle}>Google Maps Disabled</Text>
+      <Text style={[styles.overlaySubtitle, { marginBottom: 20, textAlign: 'center' }]}>
+        Waiting for API Key. In the meantime, you can securely view the live open-source map!
+      </Text>
+
+      <TouchableOpacity 
+        style={styles.waqiButton}
+        onPress={() => WebBrowser.openBrowserAsync('https://waqi.info/#/c/28.613/77.209/10z')}
+      >
+        <Text style={styles.waqiButtonText}>Open Live WAQI Map</Text>
+      </TouchableOpacity>
+      
+      {/* 
       <MapView
         provider={PROVIDER_GOOGLE}
         style={styles.map}
@@ -51,7 +67,9 @@ export default function MapScreen() {
           </View>
         </Marker>
       </MapView>
-      <View style={styles.overlay}>
+      */}
+      
+      <View style={[styles.overlay, {top: 150}]}>
         <Text style={styles.overlayTitle}>Live Pollution Map</Text>
         <Text style={styles.overlaySubtitle}>Delhi NCR Region</Text>
       </View>
@@ -108,5 +126,21 @@ const styles = StyleSheet.create({
   overlaySubtitle: {
     fontSize: 12,
     color: '#666',
+  },
+  waqiButton: {
+    backgroundColor: '#00B0FF',
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: 30,
+    shadowColor: '#00B0FF',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  waqiButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

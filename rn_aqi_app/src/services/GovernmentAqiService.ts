@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 import { GovernmentStation } from '../models/GovernmentStation';
 
 // Public token for AQICN (World Air Quality Index Project)
-const API_TOKEN = 'demo'; // Note: In a real app, this should be a secure key.
+const API_TOKEN = 'a962dcada5e955c8f62ab391ab993bab339675f2'; // Note: In a real app, this should be a secure key.
 const BASE_URL = 'https://api.waqi.info';
 
 const NCR_STATION_IDS: Record<string, number[]> = {
@@ -47,7 +47,7 @@ export class GovernmentAqiService {
           uid: item.uid,
           name: item.station.name,
           aqi: parseInt(item.aqi) || 0,
-          time: item.station.time,
+          time: item.station.time || new Date().toISOString(),
           stationName: item.station.name,
           latitude: item.station.geo[0],
           longitude: item.station.geo[1],
@@ -87,7 +87,7 @@ export class GovernmentAqiService {
         uid: data.idx,
         name: data.city.name,
         aqi: data.aqi,
-        time: data.time.s,
+        time: data.time?.s || new Date().toISOString(),
         stationName: data.city.name,
         latitude: data.city.geo[0],
         longitude: data.city.geo[1],
@@ -112,7 +112,7 @@ export class GovernmentAqiService {
         uid: uid,
         name: data.city.name,
         aqi: data.aqi,
-        time: data.time.s,
+        time: data.time?.s || new Date().toISOString(),
         stationName: data.city.name,
         latitude: data.city.geo[0],
         longitude: data.city.geo[1],
