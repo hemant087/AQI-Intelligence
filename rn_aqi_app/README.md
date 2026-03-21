@@ -80,7 +80,7 @@ Whether you are a React Native expert or a hardware enthusiast, your contributio
 
 | **Dashboard** | **Official Monitors** | **Map View** |
 | :---: | :---: | :---: |
-| ![Dashboard](https://via.placeholder.com/300x600.png?text=OpenAQI+Dashboard) | ![Monitors](https://via.placeholder.com/300x600.png?text=Official+Monitors) | ![Map](https://via.placeholder.com/300x600.png?text=Live+Pollution+Map) |
+| ![Dashboard](assets/screenshots/dashboard.jpg) | ![Monitors](assets/screenshots/monitors.jpg) | ![Map](assets/screenshots/map.jpg) |
 
 ---
 
