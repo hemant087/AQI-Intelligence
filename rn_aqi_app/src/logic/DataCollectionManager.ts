@@ -4,6 +4,8 @@ import { bleAdapter, DeviceConnectionState } from './BleAdapter';
 import { locationService } from '../services/LocationService';
 import { localStorageService } from '../services/LocalStorageService';
 
+import { demoSimulator } from './DemoSimulator';
+
 export class DataCollectionManager {
   private latestReadingSubject = new BehaviorSubject<AQIReading | null>(null);
 
@@ -16,6 +18,14 @@ export class DataCollectionManager {
     bleAdapter.readings$.subscribe(async (reading) => {
       await this.processReading(reading);
     });
+
+    // Listen to Demo Simulator
+    demoSimulator.readings$.subscribe(async (reading) => {
+      if (reading) await this.processReading(reading);
+    });
+
+    // Start simulator automatically for demo purposes
+    demoSimulator.start();
   }
 
   get latestReading$(): Observable<AQIReading | null> {

@@ -11,17 +11,7 @@ class DashboardScreen extends ConsumerWidget {
     final currentPm = aqiSummary['current_pm25'];
     final level = aqiSummary['level'] ?? 'Good';
 
-    // IQAir Color Palette
-    Color getLevelColor(String level) {
-      if (level.contains('Moderate')) return const Color(0xfffacd5c);
-      if (level.contains('Unhealthy (Sens.)')) return const Color(0xfff99049);
-      if (level.contains('Unhealthy')) return const Color(0xfff65e5f);
-      if (level.contains('Very Unhealthy')) return const Color(0xffa070b6);
-      if (level == 'Hazardous') return const Color(0xffa06a7b);
-      return const Color(0xffa8e05f); // Good
-    }
-
-    final levelColor = getLevelColor(level);
+    final levelColor = _getLevelColor(level);
 
     return Scaffold(
       backgroundColor: const Color(0xfff8f9fa),
@@ -39,9 +29,9 @@ class DashboardScreen extends ConsumerWidget {
                    const SizedBox(height: 16),
                    _buildWeatherSection(context, aqiSummary),
                    const SizedBox(height: 24),
-                   _buildHourlyForecast(context),
+                   _buildHourlyForecast(context, aqiSummary),
                    const SizedBox(height: 24),
-                   _buildDailyForecast(context),
+                   _buildDailyForecast(context, aqiSummary),
                    const SizedBox(height: 32),
                 ],
               ),
@@ -208,13 +198,17 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHourlyForecast(BuildContext context) {
+  Widget _buildHourlyForecast(BuildContext context, Map<String, dynamic> summary) {
+    final int baseAqi = int.tryParse(summary['current_pm25'] ?? '0') ?? 45;
+    final String tempRaw = (summary['temperature'] as String?)?.replaceAll('°', '') ?? '25';
+    final int baseTemp = int.tryParse(tempRaw) ?? 25;
+
     final List<Map<String, dynamic>> hourly = [
-      {'time': 'Now', 'aqi': 112, 'color': const Color(0xfff99049), 'temp': '25°'},
-      {'time': '03:30', 'aqi': 116, 'color': const Color(0xfff99049), 'temp': '25°'},
-      {'time': '04:30', 'aqi': 119, 'color': const Color(0xfff99049), 'temp': '25°'},
-      {'time': '05:30', 'aqi': 122, 'color': const Color(0xfff65e5f), 'temp': '24°'},
-      {'time': '06:30', 'aqi': 125, 'color': const Color(0xfff65e5f), 'temp': '23°'},
+      {'time': 'Now', 'aqi': baseAqi, 'color': _getLevelColor(summary['level'] ?? 'Good'), 'temp': '${baseTemp}°'},
+      {'time': '01:00', 'aqi': baseAqi + 4, 'color': _getLevelColor('Moderate'), 'temp': '${baseTemp + 1}°'},
+      {'time': '02:00', 'aqi': baseAqi + 7, 'color': _getLevelColor('Moderate'), 'temp': '${baseTemp + 1}°'},
+      {'time': '03:00', 'aqi': baseAqi + 10, 'color': _getLevelColor('Unhealthy'), 'temp': '${baseTemp}°'},
+      {'time': '04:00', 'aqi': baseAqi + 13, 'color': _getLevelColor('Unhealthy'), 'temp': '${baseTemp - 1}°'},
     ];
 
     return Column(
@@ -266,11 +260,15 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDailyForecast(BuildContext context) {
+  Widget _buildDailyForecast(BuildContext context, Map<String, dynamic> summary) {
+    final int baseAqi = int.tryParse(summary['current_pm25'] ?? '0') ?? 45;
+    final String tempRaw = (summary['temperature'] as String?)?.replaceAll('°', '') ?? '25';
+    final int baseTemp = int.tryParse(tempRaw) ?? 25;
+
     final List<Map<String, dynamic>> daily = [
-      {'day': 'Today', 'aqi': 139, 'color': const Color(0xfff99049), 'temp': '26°/16°'},
-      {'day': 'Sun', 'aqi': 150, 'color': const Color(0xfff99049), 'temp': '27°/18°'},
-      {'day': 'Mon', 'aqi': 153, 'color': const Color(0xfff65e5f), 'temp': '28°/19°'},
+      {'day': 'Today', 'aqi': baseAqi + 12, 'color': _getLevelColor('Unhealthy (Sens.)'), 'temp': '${baseTemp + 2}°/${baseTemp - 8}°'},
+      {'day': 'Sun', 'aqi': baseAqi + 20, 'color': _getLevelColor('Unhealthy (Sens.)'), 'temp': '${baseTemp + 3}°/${baseTemp - 7}°'},
+      {'day': 'Mon', 'aqi': baseAqi + 25, 'color': _getLevelColor('Unhealthy'), 'temp': '${baseTemp + 4}°/${baseTemp - 6}°'},
     ];
 
     return Column(
@@ -325,5 +323,15 @@ class DashboardScreen extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  // IQAir Color Palette
+  Color _getLevelColor(String level) {
+    if (level.contains('Moderate')) return const Color(0xfffacd5c);
+    if (level.contains('Unhealthy (Sens.)')) return const Color(0xfff99049);
+    if (level.contains('Unhealthy')) return const Color(0xfff65e5f);
+    if (level.contains('Very Unhealthy')) return const Color(0xffa070b6);
+    if (level == 'Hazardous') return const Color(0xffa06a7b);
+    return const Color(0xffa8e05f); // Good
   }
 }
