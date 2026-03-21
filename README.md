@@ -69,3 +69,14 @@ We are building a highly collaborative, interdisciplinary team. Here is how you 
 3. **Open a PR:** Once your feature is ready, open a Pull Request. Make sure to include details on how you tested it (especially if it involves physical hardware)!
 
 *Let's clear the air, together!* 💨
+
+## 📱 Screenshots
+
+| **Dashboard** | **Official Monitors** | **Map View** |
+| :---: | :---: | :---: |
+| ![Dashboard](https://via.placeholder.com/300x600.png?text=OpenAQI+Dashboard) | ![Monitors](https://via.placeholder.com/300x600.png?text=Official+Monitors) | ![Map](https://via.placeholder.com/300x600.png?text=Live+Pollution+Map) |
+
+---
+
+*Let's clean the air, together!* 💨
+
