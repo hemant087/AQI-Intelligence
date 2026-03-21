@@ -68,7 +68,8 @@ We are building a highly collaborative, interdisciplinary team. Here is how you 
 2. **Read the Architecture Docs:** Familiarize yourself with the Universal Adapter Architecture logic.
 3. **Open a PR:** Once your feature is ready, open a Pull Request. Make sure to include details on how you tested it (especially if it involves physical hardware)!
 
-*Let's clear the air, together!* 💨
+
+---
 
 ## 📱 Screenshots
 
