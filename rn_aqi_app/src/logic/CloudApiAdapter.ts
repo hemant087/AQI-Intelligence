@@ -69,7 +69,7 @@ export class CloudApiAdapter implements IAqiAdapter {
 
       // 2. Fallback: WAQI (World Air Quality Index)
       const waqiRes = await fetch(
-        `https://api.waqi.info/feed/geo:${lat};${lon}/?token=a962dcada5e955c8f62ab391ab993bab339675f2`,
+        `https://api.waqi.info/feed/geo:${lat};${lon}/?token=${process.env.EXPO_PUBLIC_WAQI_TOKEN}`,
       );
       if (waqiRes.ok) {
         const data = await waqiRes.json();

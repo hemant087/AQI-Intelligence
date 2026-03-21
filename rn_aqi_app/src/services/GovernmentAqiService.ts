@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 import { GovernmentStation } from '../models/GovernmentStation';
 
 // Public token for AQICN (World Air Quality Index Project)
-const API_TOKEN = 'a962dcada5e955c8f62ab391ab993bab339675f2'; // Note: In a real app, this should be a secure key.
+const API_TOKEN = process.env.EXPO_PUBLIC_WAQI_TOKEN;
 const BASE_URL = 'https://api.waqi.info';
 
 const NCR_STATION_IDS: Record<string, number[]> = {

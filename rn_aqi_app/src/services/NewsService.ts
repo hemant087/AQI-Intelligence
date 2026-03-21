@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 import { NewsArticle } from '../models/NewsArticle';
 
-const API_KEY = 'pub_7146059c1c4f5c9e6584c3e8f81f81f81f81'; // Placeholder/Mock key concept
+const API_KEY = process.env.EXPO_PUBLIC_NEWS_API_KEY;
 const BASE_URL = 'https://newsdata.io/api/1/news';
 
 export class NewsService {
