@@ -14,6 +14,7 @@ final latestReadingProvider = StreamProvider<AQIReading>((ref) {
 });
 
 /// A synthesized overview state to supply the Dashboard widgets
+/// A synthesized overview state to supply the Dashboard widgets
 final aqiSummaryProvider = Provider<Map<String, dynamic>>((ref) {
   final latestAsync = ref.watch(latestReadingProvider);
   
@@ -30,6 +31,11 @@ final aqiSummaryProvider = Provider<Map<String, dynamic>>((ref) {
      return {
        'current_pm25': latest.pm25.toStringAsFixed(1),
        'level': level,
+       'temperature': latest.temperature != null ? '${latest.temperature!.round()}°' : '--°',
+       'humidity': latest.humidity != null ? '${latest.humidity!.round()}%' : '--%',
+       'source_name': latest.sourceName ?? 'Unknown Sensor',
+       'lat': latest.latitude,
+       'lng': latest.longitude,
      };
   }
 
@@ -37,5 +43,11 @@ final aqiSummaryProvider = Provider<Map<String, dynamic>>((ref) {
   return {
     'current_pm25': '--',
     'level': 'Connecting...',
+    'temperature': '--°',
+    'humidity': '--%',
+    'source_name': 'Searching...',
+    'lat': null,
+    'lng': null,
   };
 });
+

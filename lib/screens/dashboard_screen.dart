@@ -37,7 +37,7 @@ class DashboardScreen extends ConsumerWidget {
                 children: [
                    _buildMainAqiCard(context, currentPm, level, levelColor),
                    const SizedBox(height: 16),
-                   _buildWeatherSection(context),
+                   _buildWeatherSection(context, aqiSummary),
                    const SizedBox(height: 24),
                    _buildHourlyForecast(context),
                    const SizedBox(height: 24),
@@ -178,7 +178,7 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildWeatherSection(BuildContext context) {
+  Widget _buildWeatherSection(BuildContext context, Map<String, dynamic> summary) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -189,9 +189,9 @@ class DashboardScreen extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildWeatherItem(Icons.wb_sunny, '25°', 'Sunny'),
-          _buildWeatherItem(Icons.navigation, '9 km/h', 'Wind'),
-          _buildWeatherItem(Icons.water_drop, '50%', 'Humidity'),
+          _buildWeatherItem(Icons.thermostat, summary['temperature'] ?? '--°', 'Temp'),
+          _buildWeatherItem(Icons.water_drop, summary['humidity'] ?? '--%', 'Humidity'),
+          Expanded(child: _buildWeatherItem(Icons.sensors, 'Source', summary['source_name'] ?? 'Connecting...')),
         ],
       ),
     );
@@ -202,8 +202,8 @@ class DashboardScreen extends ConsumerWidget {
       children: [
         Icon(icon, color: Colors.blue.shade300, size: 28),
         const SizedBox(height: 8),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-        Text(label, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16), textAlign: TextAlign.center, overflow: TextOverflow.ellipsis),
+        Text(label, style: const TextStyle(color: Colors.grey, fontSize: 12), textAlign: TextAlign.center, overflow: TextOverflow.ellipsis),
       ],
     );
   }

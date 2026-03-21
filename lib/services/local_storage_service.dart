@@ -20,12 +20,29 @@ class LocalStorageService {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2, // Upgraded to v2
       onCreate: _createDB,
+      onUpgrade: _onUpgrade,
     );
   }
 
   Future _createDB(Database db, int version) async {
+    await _buildSchema(db);
+  }
+
+  Future _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      // For v1 to v2, we add new columns
+      await db.execute('ALTER TABLE readings ADD COLUMN source_name TEXT');
+      await db.execute('ALTER TABLE readings ADD COLUMN no2 REAL');
+      await db.execute('ALTER TABLE readings ADD COLUMN co REAL');
+      await db.execute('ALTER TABLE readings ADD COLUMN so2 REAL');
+      await db.execute('ALTER TABLE readings ADD COLUMN o3 REAL');
+      await db.execute('ALTER TABLE readings ADD COLUMN nh3 REAL');
+    }
+  }
+
+  Future _buildSchema(Database db) async {
     const idType = 'TEXT PRIMARY KEY';
     const textType = 'TEXT NOT NULL';
     const numType = 'REAL';
@@ -34,9 +51,15 @@ class LocalStorageService {
 CREATE TABLE readings (
   id $idType,
   device_id $textType,
+  source_name TEXT,
   timestamp $textType,
   pm25 $numType,
   pm10 $numType,
+  no2 $numType,
+  co $numType,
+  so2 $numType,
+  o3 $numType,
+  nh3 $numType,
   temperature $numType,
   humidity $numType,
   latitude $numType,

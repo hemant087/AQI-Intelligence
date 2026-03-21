@@ -5,6 +5,11 @@ import '../adapters/device_adapter.dart';
 import '../services/location_service.dart';
 import '../services/local_storage_service.dart';
 
+import '../adapters/waqi_adapter.dart';
+import '../adapters/open_weather_adapter.dart';
+import '../adapters/demo_simulator_adapter.dart';
+import '../config/api_keys.dart';
+
 class DataCollectionManager {
   final LocationService _locationService = LocationService();
   final List<DeviceAdapter> _activeAdapters = [];
@@ -12,6 +17,27 @@ class DataCollectionManager {
 
   final _validatedReadingsController = StreamController<AQIReading>.broadcast();
   Stream<AQIReading> get validatedReadingsStream => _validatedReadingsController.stream;
+
+  DataCollectionManager() {
+    _initializeApiAdapters();
+  }
+
+  void _initializeApiAdapters() {
+    // Default location for New Delhi if GPS is unavailable initially
+    const double defaultLat = 28.6139;
+    const double defaultLng = 77.2090;
+
+    // Always add simulator so UI is dynamic immediately for demo purposes
+    addAdapter(DemoSimulatorAdapter());
+
+    if (ApiConfig.waqiToken != 'YOUR_WAQI_TOKEN_HERE') {
+      addAdapter(WaqiAdapter(apiKey: ApiConfig.waqiToken, lat: defaultLat, lng: defaultLng));
+    }
+    
+    if (ApiConfig.openWeatherKey != 'YOUR_OPENWEATHER_KEY_HERE') {
+      addAdapter(OpenWeatherAdapter(apiKey: ApiConfig.openWeatherKey, lat: defaultLat, lng: defaultLng));
+    }
+  }
 
   void addAdapter(DeviceAdapter adapter) {
     if (!_activeAdapters.contains(adapter)) {
@@ -50,8 +76,8 @@ class DataCollectionManager {
     Position? pos = await _locationService.getCurrentPosition(precise: true);
     
     AQIReading enrichedReading = rawReading.copyWith(
-       latitude: pos?.latitude,
-       longitude: pos?.longitude,
+       latitude: rawReading.latitude ?? pos?.latitude,
+       longitude: rawReading.longitude ?? pos?.longitude,
        contextTag: pos != null ? _locationService.determineContextTag(pos) : 'unknown'
     );
 
