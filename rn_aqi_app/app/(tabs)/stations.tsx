@@ -1,35 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, FlatList, TouchableOpacity, SafeAreaView, ActivityIndicator, RefreshControl } from 'react-native';
+import { StyleSheet, View, Text, SectionList, TouchableOpacity, SafeAreaView, ActivityIndicator, RefreshControl } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { governmentAqiService } from '../../src/services/GovernmentAqiService';
 import { localStorageService } from '../../src/services/LocalStorageService';
 import { GovernmentStation } from '../../src/models/GovernmentStation';
 import { getAQILevel } from '../../src/models/AqiReading';
 
-const CITIES = ['Delhi', 'Noida', 'Gurgaon'];
-
 export default function StationsScreen() {
-  const [selectedCity, setSelectedCity] = useState(CITIES[0]);
   const [stations, setStations] = useState<GovernmentStation[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  const loadStations = async (city: string, isRefresh = false) => {
+  const loadStations = async (isRefresh = false) => {
     if (!isRefresh) setLoading(true);
     
     // First load from local DB
-    const cached = await localStorageService.getStationsByCity(city);
+    const cached = await localStorageService.getStationsByCity('NCR'); // Use generic 'NCR' tag
     if (cached.length > 0 && !isRefresh) {
       setStations(cached);
     }
 
-    // Then fetch from API
-    const freshData = await governmentAqiService.fetchStationsByCity(city);
+    // Then fetch from API across ALL NCR
+    const freshData = await governmentAqiService.fetchAllNcrStations();
     if (freshData.length > 0) {
       setStations(freshData);
       // Cache the results
       for (const s of freshData) {
-        await localStorageService.insertGovernmentStation(s);
+        await localStorageService.insertGovernmentStation({ ...s, city: 'NCR' });
       }
     }
     
@@ -38,29 +35,32 @@ export default function StationsScreen() {
   };
 
   useEffect(() => {
-    loadStations(selectedCity);
-  }, [selectedCity]);
+    loadStations();
+  }, []);
 
   const onRefresh = () => {
     setRefreshing(true);
-    loadStations(selectedCity, true);
+    loadStations(true);
   };
+
+  const sections = [
+    {
+      title: 'Delhi Core',
+      data: stations.filter(s => s.name.toLowerCase().includes('delhi') || s.city === 'Delhi')
+    },
+    {
+      title: 'NCR Town Stations',
+      data: stations.filter(s => !s.name.toLowerCase().includes('delhi') && s.city !== 'Delhi')
+    }
+  ].filter(section => section.data.length > 0);
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Official Monitors</Text>
-        <View style={styles.cityPicker}>
-          {CITIES.map(city => (
-            <TouchableOpacity 
-              key={city} 
-              onPress={() => setSelectedCity(city)}
-              style={[styles.cityButton, selectedCity === city && styles.activeCityButton]}
-            >
-              <Text style={[styles.cityButtonText, selectedCity === city && styles.activeCityText]}>{city}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+        <Text style={styles.title}>Delhi NCR Monitors</Text>
+        <Text style={styles.subtitle}>
+          {sections.map(s => `${s.data.length} in ${s.title}`).join(' • ')}
+        </Text>
       </View>
 
       {loading && stations.length === 0 ? (
@@ -68,13 +68,20 @@ export default function StationsScreen() {
           <ActivityIndicator size="large" color="#00B0FF" />
         </View>
       ) : (
-        <FlatList
-          data={stations}
+        <SectionList
+          sections={sections}
           keyExtractor={(item) => item.uid.toString()}
+          stickySectionHeadersEnabled={false}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
-          renderItem={({ item }) => {
+          renderSectionHeader={({ section: { title } }: { section: { title: string } }) => (
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>{title}</Text>
+              <View style={styles.sectionLine} />
+            </View>
+          )}
+          renderItem={({ item }: { item: GovernmentStation }) => {
             const levelInfo = getAQILevel(item.aqi);
             return (
               <View style={styles.stationCard}>
@@ -95,7 +102,7 @@ export default function StationsScreen() {
           ListEmptyComponent={
             <View style={styles.center}>
               <MaterialCommunityIcons name="cloud-off-outline" size={48} color="#ccc" />
-              <Text style={styles.emptyText}>No data available for {selectedCity}</Text>
+              <Text style={styles.emptyText}>No data available for NCR</Text>
             </View>
           }
           contentContainerStyle={styles.listContent}
@@ -121,6 +128,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     color: '#333',
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: -15,
   },
   cityPicker: {
     flexDirection: 'row',
@@ -152,6 +164,28 @@ const styles = StyleSheet.create({
   },
   listContent: {
     padding: 16,
+    paddingTop: 8,
+  },
+  sectionHeader: {
+    backgroundColor: '#F5F7FA',
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#00B0FF',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginRight: 10,
+  },
+  sectionLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#00B0FF',
+    opacity: 0.2,
   },
   stationCard: {
     backgroundColor: 'white',

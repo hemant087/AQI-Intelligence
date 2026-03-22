@@ -6,10 +6,19 @@ export interface AQIReading {
   timestamp: string; // ISO-8601
   pm25: number;
   pm10?: number;
+  o3?: number;
+  no2?: number;
+  so2?: number;
+  co?: number;
   sourceType: SourceType;
   latitude?: number;
   longitude?: number;
   contextTag?: string; // 'indoor' | 'outdoor' | 'unknown'
+  stationMetadata?: {
+    manufacturer?: string;
+    model?: string;
+    owner?: string;
+  };
 }
 
 export type AQILevel = 'Good' | 'Moderate' | 'Unhealthy (Sens.)' | 'Unhealthy' | 'Very Unhealthy' | 'Hazardous' | 'Connecting...';

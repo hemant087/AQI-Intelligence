@@ -6,12 +6,22 @@ import { locationService } from '../../src/services/LocationService';
 import { governmentAqiService } from '../../src/services/GovernmentAqiService';
 import { getAQILevel } from '../../src/models/AqiReading';
 import * as Location from 'expo-location';
+import { AqiTrendChart } from '../../components/AqiTrendChart';
+import { openAqHistoricalService, HistoricalDataPoint } from '../../src/services/OpenAqHistoricalService';
 
 export default function DashboardScreen() {
   const { latestReading, aqiScore, aqiInfo, healthRecommendation, connectionState } = useAqiData();
   const [nearestStation, setNearestStation] = useState<any>(null);
   const [liveAddress, setLiveAddress] = useState<string>('Locating...');
   const [userCoords, setUserCoords] = useState<{latitude: number; longitude: number} | null>(null);
+  const [historicalData, setHistoricalData] = useState<HistoricalDataPoint[]>([]);
+
+  useEffect(() => {
+    if (latestReading?.deviceId && latestReading.sourceType === 'api') {
+      openAqHistoricalService.fetchHourlyTrends(latestReading.deviceId)
+        .then(setHistoricalData);
+    }
+  }, [latestReading?.deviceId]);
 
   useEffect(() => {
     const initLocation = async () => {
@@ -19,23 +29,29 @@ export default function DashboardScreen() {
       if (hasPerms) {
         const loc = await locationService.getCurrentPosition();
         if (loc) {
-          setUserCoords({ latitude: loc.coords.latitude, longitude: loc.coords.longitude });
+          const userLat = loc.coords.latitude;
+          const userLon = loc.coords.longitude;
+          setUserCoords({ latitude: userLat, longitude: userLon });
+          
+          // Reverse geocode to get city
           const addressData = await Location.reverseGeocodeAsync(loc.coords);
-          if (addressData && addressData.length > 0) {
-            const addr = addressData[0];
-            const city = addr.city || addr.district || addr.subregion || 'Unknown City';
-            const region = addr.region || addr.country || '';
-            setLiveAddress(`${city}, ${region}`.trim());
+          let city = 'Delhi'; // Default
+          // Fetch ALL NCR stations and find the TRULY nearest one
+          const allStations = await governmentAqiService.fetchAllNcrStations();
+          if (allStations && allStations.length > 0) {
+            const sorted = allStations.sort((a, b) => {
+              const distA = locationService.calculateDistance(userLat, userLon, a.latitude, a.longitude);
+              const distB = locationService.calculateDistance(userLat, userLon, b.latitude, b.longitude);
+              return distA - distB;
+            });
+            setNearestStation(sorted[0]);
           } else {
-            setLiveAddress('Location found');
+            // Fallback to legacy nearest logic
+            const station = await governmentAqiService.fetchNearestStation();
+            if (station) setNearestStation(station);
           }
         }
-      } else {
-        setLiveAddress('No GPS access');
       }
-
-      const station = await governmentAqiService.fetchNearestStation();
-      if (station) setNearestStation(station);
     };
     initLocation();
   }, []);
@@ -94,6 +110,9 @@ export default function DashboardScreen() {
           <Text style={styles.healthBody}>{healthRecommendation}</Text>
         </View>
 
+        {/* 24H Trend Chart */}
+        <AqiTrendChart data={historicalData} color={aqiInfo.color} />
+
         {/* Split Cards: Live Location & Nearest Station */}
         <View style={styles.splitCardsRow}>
           
@@ -142,16 +161,50 @@ export default function DashboardScreen() {
             value={latestReading?.pm10 ? `${latestReading.pm10.toFixed(1)} µg/m³` : '--'}
           />
           <DetailItem 
-            icon={<FontAwesome5 name="thermometer-half" size={24} color="#555" />}
-            label="Temp"
-            value="28°C"
+            icon={<MaterialCommunityIcons name="weather-hazy" size={24} color="#555" />}
+            label="O3"
+            value={latestReading?.o3 ? `${latestReading.o3.toFixed(2)} ppm` : '--'}
           />
           <DetailItem 
-            icon={<MaterialCommunityIcons name="water-percent" size={24} color="#555" />}
-            label="Humidity"
-            value="45%"
+            icon={<MaterialCommunityIcons name="blur-linear" size={24} color="#555" />}
+            label="NO2"
+            value={latestReading?.no2 ? `${latestReading.no2.toFixed(3)} ppm` : '--'}
+          />
+          <DetailItem 
+            icon={<MaterialCommunityIcons name="blur-radial" size={24} color="#555" />}
+            label="SO2"
+            value={latestReading?.so2 ? `${latestReading.so2.toFixed(3)} ppm` : '--'}
+          />
+          <DetailItem 
+            icon={<MaterialCommunityIcons name="car-back" size={24} color="#555" />}
+            label="CO"
+            value={latestReading?.co ? `${latestReading.co.toFixed(2)} ppm` : '--'}
           />
         </View>
+
+        {/* Station Metadata Card */}
+        {latestReading?.stationMetadata && (
+          <View style={styles.metadataCard}>
+            <View style={styles.metadataHeader}>
+              <MaterialCommunityIcons name="information-outline" size={18} color="#666" />
+              <Text style={styles.metadataTitle}>Station Information</Text>
+            </View>
+            <View style={styles.metadataContent}>
+              <View style={styles.metadataRow}>
+                <Text style={styles.metadataLabel}>Manufacturer:</Text>
+                <Text style={styles.metadataValue}>{latestReading.stationMetadata.manufacturer || 'Unknown'}</Text>
+              </View>
+              <View style={styles.metadataRow}>
+                <Text style={styles.metadataLabel}>Model:</Text>
+                <Text style={styles.metadataValue}>{latestReading.stationMetadata.model || 'Unknown'}</Text>
+              </View>
+              <View style={styles.metadataRow}>
+                <Text style={styles.metadataLabel}>Provider:</Text>
+                <Text style={styles.metadataValue}>{latestReading.stationMetadata.owner || 'OpenAQ'}</Text>
+              </View>
+            </View>
+          </View>
+        )}
 
         {/* Connection Status */}
         <View style={styles.statusFooter}>
@@ -383,5 +436,48 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  metadataCard: {
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 16,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  metadataHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+    paddingBottom: 8,
+  },
+  metadataTitle: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#666',
+    marginLeft: 6,
+    textTransform: 'uppercase',
+  },
+  metadataContent: {
+    flexDirection: 'column',
+  },
+  metadataRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  metadataLabel: {
+    fontSize: 13,
+    color: '#888',
+  },
+  metadataValue: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#444',
   },
 });

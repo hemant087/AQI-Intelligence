@@ -27,10 +27,17 @@ export class LocalStorageService {
         timestamp TEXT NOT NULL,
         pm25 REAL NOT NULL,
         pm10 REAL,
+        o3 REAL,
+        no2 REAL,
+        so2 REAL,
+        co REAL,
         sourceType TEXT NOT NULL,
         latitude REAL,
         longitude REAL,
-        contextTag TEXT
+        contextTag TEXT,
+        manufacturer TEXT,
+        model TEXT,
+        owner TEXT
       );
       CREATE TABLE IF NOT EXISTS government_stations (
         uid INTEGER PRIMARY KEY NOT NULL,
@@ -64,18 +71,25 @@ export class LocalStorageService {
       return;
     }
     this.db.runAsync(
-      `INSERT OR REPLACE INTO readings (id, deviceId, timestamp, pm25, pm10, sourceType, latitude, longitude, contextTag)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+      `INSERT OR REPLACE INTO readings (id, deviceId, timestamp, pm25, pm10, o3, no2, so2, co, sourceType, latitude, longitude, contextTag, manufacturer, model, owner)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
       [
         reading.id,
         reading.deviceId,
         reading.timestamp,
         reading.pm25,
         reading.pm10 || null,
+        reading.o3 || null,
+        reading.no2 || null,
+        reading.so2 || null,
+        reading.co || null,
         reading.sourceType,
         reading.latitude || null,
         reading.longitude || null,
         reading.contextTag || null,
+        reading.stationMetadata?.manufacturer || null,
+        reading.stationMetadata?.model || null,
+        reading.stationMetadata?.owner || null,
       ]
     );
   }

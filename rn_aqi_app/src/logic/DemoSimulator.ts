@@ -36,9 +36,18 @@ export class DemoSimulator implements IAqiAdapter {
         timestamp: new Date().toISOString(),
         pm25: this.basePm25,
         pm10: this.basePm25 * 1.5,
+        o3: 0.04 + Math.random() * 0.02,
+        no2: 0.01 + Math.random() * 0.01,
+        so2: 0.005 + Math.random() * 0.005,
+        co: 0.5 + Math.random() * 0.5,
         sourceType: "api",
         latitude: 28.6139 + (Math.random() * 0.01 - 0.005),
         longitude: 77.209 + (Math.random() * 0.01 - 0.005),
+        stationMetadata: {
+          manufacturer: "SimuSensor v2",
+          model: "CloudRefiner 5000",
+          owner: "Demo Corporation"
+        }
       };
 
       this.readingsSubject.next(reading);

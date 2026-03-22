@@ -40,34 +40,72 @@ export class CloudApiAdapter implements IAqiAdapter {
   }
 
   private async fetchFromApis(lat: number, lon: number) {
-    try {
-      // 1. Primary: Try OpenAQ (which contains CPCB India core data)
-      // Note: In production, you should add your OpenAQ API key to the headers
-      const openAqRes = await fetch(
-        `https://api.openaq.org/v2/latest?coordinates=${lat},${lon}&radius=5000`,
-      );
+    const OPENAQ_KEY = process.env.EXPO_PUBLIC_OPENAQ_API_KEY;
+    const OPENAQ_BASE = 'https://api.openaq.org/v3';
 
-      if (openAqRes.ok) {
-        const data = await openAqRes.json();
-        if (data.results && data.results.length > 0) {
-          // Parse OpenAQ
-          const pm25Measurement = data.results[0].measurements.find(
-            (m: any) => m.parameter === "pm25",
-          );
-          const reading: AQIReading = {
-            id: `openaq_${Date.now()}`,
-            deviceId:
-              data.results[0].locationId?.toString() || "openaq_station",
-            timestamp: new Date().toISOString(),
-            pm25: pm25Measurement ? pm25Measurement.value : 0,
-            sourceType: "api",
-          };
-          this.readingsSubject.next(reading);
-          return;
+    try {
+      // 1. Primary: Try OpenAQ v3 (might fail on web due to CORS)
+      try {
+        const openAqLocRes = await fetch(
+          `${OPENAQ_BASE}/locations?coordinates=${lat},${lon}&radius=25000&limit=1`,
+          {
+            headers: {
+              'X-API-Key': OPENAQ_KEY || '',
+            },
+          }
+        );
+
+        if (openAqLocRes.ok) {
+          const locData = await openAqLocRes.json();
+          if (locData.results && locData.results.length > 0) {
+            const location = locData.results[0];
+            const locationId = location.id;
+            const manufacturer = location.manufacturers?.[0]?.manufacturerName;
+            const model = location.manufacturers?.[0]?.modelName;
+            const owner = location.owners?.[0]?.ownerName;
+            
+            const openAqLatestRes = await fetch(
+              `${OPENAQ_BASE}/locations/${locationId}/latest`,
+              {
+                headers: {
+                  'X-API-Key': OPENAQ_KEY || '',
+                },
+              }
+            );
+
+            if (openAqLatestRes.ok) {
+              const latestData = await openAqLatestRes.json();
+              if (latestData.results && latestData.results.length > 0) {
+                const measurements = latestData.results;
+                const getVal = (param: string) => measurements.find((m: any) => m.parameter.name === param)?.value;
+
+                const reading: AQIReading = {
+                  id: `openaq_v3_${locationId}_${Date.now()}`,
+                  deviceId: locationId.toString(),
+                  timestamp: new Date().toISOString(),
+                  pm25: getVal("pm25") || 0,
+                  pm10: getVal("pm10"),
+                  o3: getVal("o3"),
+                  no2: getVal("no2"),
+                  so2: getVal("so2"),
+                  co: getVal("co"),
+                  sourceType: "api",
+                  latitude: location.coordinates?.latitude,
+                  longitude: location.coordinates?.longitude,
+                  stationMetadata: { manufacturer, model, owner }
+                };
+                this.readingsSubject.next(reading);
+                return; // Success with OpenAQ
+              }
+            }
+          }
         }
+      } catch (openAqErr) {
+        // Silently continue to WAQI if OpenAQ fails (likely CORS on web)
+        console.warn("OpenAQ fetch skipped or failed:", openAqErr);
       }
 
-      // 2. Fallback: WAQI (World Air Quality Index)
+      // 2. Fallback: WAQI (World Air Quality Index) - usually works on web
       const waqiRes = await fetch(
         `https://api.waqi.info/feed/geo:${lat};${lon}/?token=${process.env.EXPO_PUBLIC_WAQI_TOKEN}`,
       );
@@ -85,7 +123,7 @@ export class CloudApiAdapter implements IAqiAdapter {
         }
       }
     } catch (e) {
-      console.error("Failed to fetch from Cloud APIs", e);
+      console.error("Critical failure in CloudApiAdapter", e);
     }
   }
 

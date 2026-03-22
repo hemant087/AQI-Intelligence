@@ -28,13 +28,7 @@ export class DataCollectionManager {
   }
 
   private init() {
-    // Web browsers block Cloud APIs (CORS errors). Default to Simulator on Web.
-    if (Platform.OS === 'web') {
-      this.setActiveAdapter(demoSimulator);
-      return;
-    }
-
-    // 1. Auto-start the Cloud API adapter as the baseline for Mobile.
+    // Auto-start the Cloud API adapter as the baseline.
     // Use the Location Service to feed it the user's GPS coords.
     this.startCloudFallback();
   }

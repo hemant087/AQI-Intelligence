@@ -6,21 +6,36 @@ const API_TOKEN = process.env.EXPO_PUBLIC_WAQI_TOKEN;
 const BASE_URL = 'https://api.waqi.info';
 
 const NCR_STATION_IDS: Record<string, number[]> = {
-  'Delhi': [8677, 8678, 1453, 1454, 3031], // Anand Vihar, Shadipur, ITO, etc.
+  'Delhi': [8677, 8678, 1453, 1454, 3031, 3032, 3033, 8679, 8680, 8681, 1455, 1456, 1457, 1458, 1459, 1460], // Expanded list
   'Noida': [8181, 8180], // Sector 62, Sector 125
   'Gurgaon': [8182, 10832], // Vikas Sadan, Sector 51
 };
 
+const NCR_CITIES = ['Delhi', 'Noida', 'Gurgaon', 'Ghaziabad', 'Faridabad', 'Greater Noida'];
+
 export class GovernmentAqiService {
+  /**
+   * Fetch ALL stations across the entire Delhi NCR region
+   */
+  async fetchAllNcrStations(): Promise<GovernmentStation[]> {
+    try {
+      const results = await Promise.all(
+        NCR_CITIES.map(city => this.fetchStationsByCity(city))
+      );
+      // Flatten and remove duplicates by UID
+      const flat = results.flat();
+      const unique = Array.from(new Map(flat.map(s => [s.uid, s])).values());
+      return unique;
+    } catch (e) {
+      console.error('Failed to fetch consolidated NCR stations', e);
+      return [];
+    }
+  }
+
   /**
    * Fetch stations for a given city
    */
   async fetchStationsByCity(city: string): Promise<GovernmentStation[]> {
-    if (Platform.OS === 'web') {
-      // Return high-quality mock data for web preview
-      return this.getMockStations(city);
-    }
-
     try {
       const query = `${city}, India`;
       const response = await fetch(`${BASE_URL}/search/?token=${API_TOKEN}&keyword=${encodeURIComponent(query)}`);
@@ -28,11 +43,12 @@ export class GovernmentAqiService {
 
       let results = json.status === 'ok' ? json.data : [];
       
-      // If search returns nothing or irrelevant results, fallback to known UIDs
-      if (results.length === 0 || !results.some((r: any) => r.station.name.toLowerCase().includes(city.toLowerCase()))) {
-        const uids = NCR_STATION_IDS[city] || [];
-        const fallbackResults = await Promise.all(uids.map(uid => this.fetchStationByUid(uid, city)));
-        return fallbackResults.filter(s => s !== null) as GovernmentStation[];
+      // Fallback search keywords for broader match
+      if (results.length === 0) {
+        const altQuery = city === 'Gurgaon' ? 'Gurugram' : city;
+        const altRes = await fetch(`${BASE_URL}/search/?token=${API_TOKEN}&keyword=${encodeURIComponent(altQuery)}`);
+        const altJson = await altRes.json();
+        results = altJson.status === 'ok' ? altJson.data : [];
       }
 
       return results
@@ -40,8 +56,9 @@ export class GovernmentAqiService {
           const name = item.station.name.toLowerCase();
           const cityLower = city.toLowerCase();
           return name.includes(cityLower) || 
-                 (cityLower === 'noida' && (name.includes('noida') || name.includes('uttar pradesh'))) ||
-                 (cityLower === 'gurgaon' && (name.includes('gurugram') || name.includes('haryana')));
+                 (cityLower === 'noida' && name.includes('uttar pradesh')) ||
+                 (cityLower === 'gurgaon' && name.includes('haryana')) ||
+                 (cityLower === 'faridabad' && name.includes('haryana'));
         })
         .map((item: any) => ({
           uid: item.uid,
@@ -64,19 +81,6 @@ export class GovernmentAqiService {
    * Fetch the nearest station based on IP or GPS
    */
   async fetchNearestStation(): Promise<GovernmentStation | null> {
-    if (Platform.OS === 'web') {
-      return {
-        uid: 999,
-        name: 'Civil Lines, Delhi - CPCB',
-        aqi: 288,
-        time: new Date().toISOString(),
-        stationName: 'Civil Lines, Delhi',
-        latitude: 28.6139,
-        longitude: 77.2090,
-        city: 'Nearby',
-        pollutants: { pm25: 238, pm10: 250 }
-      };
-    }
     try {
       const response = await fetch(`${BASE_URL}/feed/here/?token=${API_TOKEN}`);
       const json = await response.json();
@@ -125,33 +129,6 @@ export class GovernmentAqiService {
     } catch (e) {
       return null;
     }
-  }
-
-  private getMockStations(city: string): GovernmentStation[] {
-    const mocks: Record<string, any[]> = {
-      'Delhi': [
-        { uid: 1, name: 'Anand Vihar, Delhi - DPCC', aqi: 342, time: '14:00' },
-        { uid: 2, name: 'ITO, Delhi - CPCB', aqi: 285, time: '14:00' },
-        { uid: 3, name: 'RK Puram, Delhi - DPCC', aqi: 310, time: '14:00' }
-      ],
-      'Noida': [
-        { uid: 4, name: 'Sector 62, Noida - IMD', aqi: 295, time: '14:00' },
-        { uid: 5, name: 'Sector 125, Noida - UPPCB', aqi: 270, time: '14:00' }
-      ],
-      'Gurgaon': [
-        { uid: 6, name: 'Vikas Sadan, Gurugram - HSPCB', aqi: 320, time: '14:00' },
-        { uid: 7, name: 'Sector 51, Gurugram - HSPCB', aqi: 305, time: '14:00' }
-      ]
-    };
-
-    return (mocks[city] || []).map(m => ({
-      ...m,
-      stationName: m.name,
-      latitude: 28.6139,
-      longitude: 77.2090,
-      city: city,
-      pollutants: { pm25: m.aqi - 50, pm10: m.aqi + 20 }
-    }));
   }
 }
 
