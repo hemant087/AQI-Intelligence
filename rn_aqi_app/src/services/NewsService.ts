@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 import { NewsArticle } from '../models/NewsArticle';
 
 const API_KEY = process.env.EXPO_PUBLIC_NEWS_API_KEY;
-const BASE_URL = 'https://newsdata.io/api/1/news';
+const BASE_URL = 'https://newsdata.io/api/1/latest';
 
 export class NewsService {
   async fetchEnvironmentalNews(): Promise<NewsArticle[]> {
@@ -12,7 +12,9 @@ export class NewsService {
 
     try {
       // Searching for Delhi Pollution / Environment in India
-      const response = await fetch(`${BASE_URL}?apikey=${API_KEY}&q=delhi%20pollution%20OR%20air%20quality&country=in&language=en&category=environment`);
+      // Specific query for air quality news in India/Delhi
+      const query = encodeURIComponent('("air quality index" OR AQI OR "air pollution") AND (PM2.5 OR PM10 OR smog) AND (India OR Delhi)');
+      const response = await fetch(`${BASE_URL}?apikey=${API_KEY}&q=${query}&language=en`);
       const json = await response.json();
 
       if (json.status !== 'success') return this.getMockNews();
