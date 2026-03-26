@@ -1,5 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 import { Platform } from 'react-native';
+import { NewsArticle } from '../models/NewsArticle';
 import { AQIReading } from '../models/AqiReading';
 
 const DB_NAME = 'aqi_database.db';
@@ -49,6 +50,17 @@ export class LocalStorageService {
         longitude REAL,
         lastUpdated TEXT NOT NULL
       );
+      CREATE TABLE IF NOT EXISTS news (
+        id TEXT PRIMARY KEY NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT,
+        content TEXT,
+        url TEXT NOT NULL,
+        imageUrl TEXT,
+        source TEXT,
+        publishedAt TEXT NOT NULL,
+        fetchedAt TEXT NOT NULL
+      );
     `);
   }
 
@@ -64,6 +76,30 @@ export class LocalStorageService {
   async getStationsByCity(city: string): Promise<any[]> {
     if (Platform.OS === 'web') return [];
     return this.db.getAllAsync(`SELECT * FROM government_stations WHERE city = ? ORDER BY aqi DESC`, [city]);
+  }
+
+  async insertNewsArticle(article: NewsArticle): Promise<void> {
+    if (Platform.OS === 'web') return;
+    this.db.runAsync(
+      `INSERT OR REPLACE INTO news (id, title, description, content, url, imageUrl, source, publishedAt, fetchedAt)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+      [
+        article.id,
+        article.title,
+        article.description || null,
+        article.content || null,
+        article.url,
+        article.imageUrl || null,
+        article.source,
+        article.publishedAt,
+        new Date().toISOString()
+      ]
+    );
+  }
+
+  async getAllNews(): Promise<NewsArticle[]> {
+    if (Platform.OS === 'web') return [];
+    return this.db.getAllAsync(`SELECT * FROM news ORDER BY publishedAt DESC`);
   }
   async insertReading(reading: AQIReading): Promise<void> {
     if (Platform.OS === 'web') {
@@ -107,6 +143,38 @@ export class LocalStorageService {
     const date = new Date();
     date.setDate(date.getDate() - days);
     await this.db.runAsync(`DELETE FROM readings WHERE timestamp < ?`, [date.toISOString()]);
+  }
+
+  async getAllReadings(): Promise<AQIReading[]> {
+    if (Platform.OS === 'web') return [];
+    return this.db.getAllAsync(`SELECT * FROM readings ORDER BY timestamp DESC`);
+  }
+
+  async getAllStations(): Promise<any[]> {
+    if (Platform.OS === 'web') return [];
+    return this.db.getAllAsync(`SELECT * FROM government_stations`);
+  }
+
+  async exportDatabaseToJson(): Promise<string> {
+    const news = await this.getAllNews();
+    const readings = await this.getAllReadings();
+    const stations = await this.getAllStations();
+
+    const result = {
+      exportDate: new Date().toISOString(),
+      counts: {
+        news: news.length,
+        readings: readings.length,
+        stations: stations.length,
+      },
+      data: {
+        news,
+        readings,
+        stations
+      }
+    };
+
+    return JSON.stringify(result, null, 2);
   }
 }
 

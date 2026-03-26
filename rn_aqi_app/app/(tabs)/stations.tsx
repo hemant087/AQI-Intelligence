@@ -1,35 +1,67 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, SectionList, TouchableOpacity, SafeAreaView, ActivityIndicator, RefreshControl } from 'react-native';
+import { StyleSheet, View, Text, SectionList, SafeAreaView, ActivityIndicator, RefreshControl, Platform } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { governmentAqiService } from '../../src/services/GovernmentAqiService';
-import { localStorageService } from '../../src/services/LocalStorageService';
-import { GovernmentStation } from '../../src/models/GovernmentStation';
+// GovernmentAqiService (WAQI) commented out — using OpenAQ exclusively
+// import { governmentAqiService } from '../../src/services/GovernmentAqiService';
+import { openAqHistoricalService } from '../../src/services/OpenAqHistoricalService';
+import { getStationsByCity } from '../../src/services/SupabaseService';
 import { getAQILevel } from '../../src/models/AqiReading';
 
+// Delhi NCR bounding box
+const NCR_BBOX = { minLat: 28.3, minLon: 76.8, maxLat: 28.9, maxLon: 77.5 };
+
+// Normalise an OpenAQ location into a display-friendly shape
+function normaliseStation(loc: any, index: number) {
+  return {
+    uid: loc.id ?? index,
+    name: loc.name || 'Unknown Station',
+    city: loc.locality || loc.country?.name || 'NCR',
+    sensors: loc.sensors?.length ?? 0,
+    owner: loc.owners?.[0]?.ownerName ?? loc.providers?.[0]?.name ?? 'OpenAQ',
+    latitude: loc.coordinates?.latitude,
+    longitude: loc.coordinates?.longitude,
+    isMonitor: loc.isMonitor ?? false,
+  };
+}
+
 export default function StationsScreen() {
-  const [stations, setStations] = useState<GovernmentStation[]>([]);
+  const [stations, setStations] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [webFallback, setWebFallback] = useState(false);
 
   const loadStations = async (isRefresh = false) => {
     if (!isRefresh) setLoading(true);
-    
-    // First load from local DB
-    const cached = await localStorageService.getStationsByCity('NCR'); // Use generic 'NCR' tag
-    if (cached.length > 0 && !isRefresh) {
-      setStations(cached);
+
+    if (Platform.OS === 'web') {
+      // ☁️ Web: OpenAQ blocks CORS from browsers — load from Supabase cloud cache
+      setWebFallback(true);
+      const cities = ['Delhi', 'Noida', 'Gurgaon', 'Ghaziabad', 'Faridabad'];
+      const results = await Promise.all(cities.map(c => getStationsByCity(c)));
+      const all = results.flat();
+      if (all.length > 0) {
+        setStations(all.map(s => ({
+          uid: s.uid,
+          name: s.stationName || s.name,
+          city: s.city,
+          sensors: s.pollutants ? Object.values(s.pollutants).filter(Boolean).length : 0,
+          owner: 'OpenAQ (cached)',
+          aqi: s.aqi,
+        })));
+      }
+    } else {
+      // 📱 Native: fetch live from OpenAQ v3 bbox (no CORS restriction)
+      setWebFallback(false);
+      const raw = await openAqHistoricalService.fetchLocationsByBBox(
+        NCR_BBOX.minLat, NCR_BBOX.minLon, NCR_BBOX.maxLat, NCR_BBOX.maxLon
+      );
+      const mapped = raw.map(normaliseStation);
+      if (mapped.length > 0) setStations(mapped);
     }
 
-    // Then fetch from API across ALL NCR
-    const freshData = await governmentAqiService.fetchAllNcrStations();
-    if (freshData.length > 0) {
-      setStations(freshData);
-      // Cache the results
-      for (const s of freshData) {
-        await localStorageService.insertGovernmentStation({ ...s, city: 'NCR' });
-      }
-    }
-    
+    // ── WAQI stations: commented out ─────────────────────────────────────
+    // const freshData = await governmentAqiService.fetchAllNcrStations();
+
     setLoading(false);
     setRefreshing(false);
   };
@@ -42,6 +74,7 @@ export default function StationsScreen() {
     setRefreshing(true);
     loadStations(true);
   };
+
 
   const sections = [
     {
@@ -63,6 +96,16 @@ export default function StationsScreen() {
         </Text>
       </View>
 
+      {/* Web CORS info banner */}
+      {webFallback && (
+        <View style={styles.webBanner}>
+          <MaterialCommunityIcons name="information-outline" size={16} color="#1565C0" />
+          <Text style={styles.webBannerText}>
+            {'  '}Web view: showing cached data from Supabase. Use Expo Go for live stations.
+          </Text>
+        </View>
+      )}
+
       {loading && stations.length === 0 ? (
         <View style={styles.center}>
           <ActivityIndicator size="large" color="#00B0FF" />
@@ -81,19 +124,18 @@ export default function StationsScreen() {
               <View style={styles.sectionLine} />
             </View>
           )}
-          renderItem={({ item }: { item: GovernmentStation }) => {
-            const levelInfo = getAQILevel(item.aqi);
+          renderItem={({ item }: { item: any }) => {
             return (
               <View style={styles.stationCard}>
-                <View style={[styles.statusLine, { backgroundColor: levelInfo.color }]} />
+                <View style={[styles.statusLine, { backgroundColor: '#00B0FF' }]} />
                 <View style={styles.cardBody}>
                   <View style={styles.stationMain}>
                     <Text style={styles.stationName} numberOfLines={2}>{item.name}</Text>
-                    <Text style={styles.updateTime}>Last updated: {item.time}</Text>
+                    <Text style={styles.updateTime}>{item.owner} • {item.sensors} sensor{item.sensors !== 1 ? 's' : ''}</Text>
                   </View>
-                  <View style={[styles.aqiBadge, { backgroundColor: levelInfo.color }]}>
-                    <Text style={styles.aqiValue}>{item.aqi}</Text>
-                    <Text style={styles.aqiLabel}>AQI</Text>
+                  <View style={[styles.aqiBadge, { backgroundColor: '#00B0FF' }]}>
+                    <Text style={styles.aqiValue}>{item.sensors}</Text>
+                    <Text style={styles.aqiLabel}>SNSR</Text>
                   </View>
                 </View>
               </View>
@@ -122,6 +164,20 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
+  },
+  webBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E3F2FD',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#BBDEFB',
+  },
+  webBannerText: {
+    fontSize: 12,
+    color: '#1565C0',
+    flexShrink: 1,
   },
   title: {
     fontSize: 24,

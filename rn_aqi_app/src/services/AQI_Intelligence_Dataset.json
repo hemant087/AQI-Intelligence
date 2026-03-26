@@ -1,0 +1,57 @@
+{
+  "exportDate": "2026-03-25T19:22:26.373Z",
+  "description": "AQI Intelligence Dataset for LLM Training and RAG",
+  "schema": {
+    "news": [
+      "id",
+      "title",
+      "description",
+      "content",
+      "source",
+      "publishedAt"
+    ],
+    "readings": [
+      "id",
+      "deviceId",
+      "timestamp",
+      "pm25",
+      "contextTag"
+    ],
+    "stations": [
+      "uid",
+      "name",
+      "aqi",
+      "city",
+      "lastUpdated"
+    ]
+  },
+  "data": {
+    "news": [
+      {
+        "id": "news_1",
+        "title": "Pollution Alert: PM2.5 levels exceed safety norms in Delhi",
+        "content": "The Central Pollution Control Board reported that PM2.5 levels reached 300 in several parts of the capital today. Residents are advised to avoid outdoor activities.",
+        "source": "CPCB News",
+        "publishedAt": "2026-03-25T10:00:00Z"
+      }
+    ],
+    "readings": [
+      {
+        "id": "read_1",
+        "deviceId": "official_delhi",
+        "timestamp": "2026-03-25T11:00:00Z",
+        "pm25": 155.5,
+        "contextTag": "urban"
+      }
+    ],
+    "stations": [
+      {
+        "uid": 1234,
+        "name": "Anand Vihar",
+        "aqi": 280,
+        "city": "Delhi",
+        "lastUpdated": "2026-03-25T11:30:00Z"
+      }
+    ]
+  }
+}

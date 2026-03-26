@@ -1,33 +1,45 @@
 import { Platform } from 'react-native';
 import { NewsArticle } from '../models/NewsArticle';
+import { localStorageService } from './LocalStorageService';
+import { upsertNewsArticles } from './SupabaseService';
 
 const API_KEY = process.env.EXPO_PUBLIC_NEWS_API_KEY;
 const BASE_URL = 'https://newsdata.io/api/1/latest';
 
 export class NewsService {
   async fetchEnvironmentalNews(): Promise<NewsArticle[]> {
-    if (Platform.OS === 'web') {
-      return this.getMockNews();
-    }
-
     try {
-      // Searching for Delhi Pollution / Environment in India
       // Specific query for air quality news in India/Delhi
+      // Fetch news from multiple related categories for a richer dataset
       const query = encodeURIComponent('("air quality index" OR AQI OR "air pollution") AND (PM2.5 OR PM10 OR smog) AND (India OR Delhi)');
-      const response = await fetch(`${BASE_URL}?apikey=${API_KEY}&q=${query}&language=en`);
+      const categories = ['environment', 'science', 'health'];
+      const response = await fetch(`${BASE_URL}?apikey=${API_KEY}&q=${query}&language=en&category=${categories.join(',')}`);
       const json = await response.json();
 
       if (json.status !== 'success') return this.getMockNews();
 
-      return json.results.map((item: any) => ({
+      const articles: NewsArticle[] = json.results.map((item: any) => ({
         id: item.article_id,
         title: item.title,
-        description: item.description || item.content?.substring(0, 150) + '...',
+        description: item.description,
+        content: item.content, // Capture full content if available
         url: item.link,
         imageUrl: item.image_url,
         source: item.source_id,
         publishedAt: item.pubDate,
       }));
+
+      // Background task: persist articles to local DB + Supabase cloud for LLM/RAG
+      articles.forEach(article => {
+        localStorageService.insertNewsArticle(article).catch(err =>
+          console.error('Failed to persist news article locally', err)
+        );
+      });
+      upsertNewsArticles(articles).catch(err =>
+        console.error('Failed to persist news articles to Supabase', err)
+      );
+
+      return articles;
     } catch (e) {
       return this.getMockNews();
     }

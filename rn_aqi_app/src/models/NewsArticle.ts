@@ -6,4 +6,5 @@ export interface NewsArticle {
   imageUrl?: string;
   source: string;
   publishedAt: string;
+  content?: string;
 }

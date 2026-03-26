@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import { GovernmentStation } from '../models/GovernmentStation';
+import { upsertGovernmentStations } from './SupabaseService';
 
 // Public token for AQICN (World Air Quality Index Project)
 const API_TOKEN = process.env.EXPO_PUBLIC_WAQI_TOKEN;
@@ -16,94 +17,78 @@ const NCR_CITIES = ['Delhi', 'Noida', 'Gurgaon', 'Ghaziabad', 'Faridabad', 'Grea
 export class GovernmentAqiService {
   /**
    * Fetch ALL stations across the entire Delhi NCR region
+   * NOTE: WAQI API commented out — using OpenAQ exclusively
    */
   async fetchAllNcrStations(): Promise<GovernmentStation[]> {
-    try {
-      const results = await Promise.all(
-        NCR_CITIES.map(city => this.fetchStationsByCity(city))
-      );
-      // Flatten and remove duplicates by UID
-      const flat = results.flat();
-      const unique = Array.from(new Map(flat.map(s => [s.uid, s])).values());
-      return unique;
-    } catch (e) {
-      console.error('Failed to fetch consolidated NCR stations', e);
-      return [];
-    }
+    // ── WAQI: Commented out — using OpenAQ exclusively ────────────────────
+    // try {
+    //   const results = await Promise.all(
+    //     NCR_CITIES.map(city => this.fetchStationsByCity(city))
+    //   );
+    //   const flat = results.flat();
+    //   const unique = Array.from(new Map(flat.map(s => [s.uid, s])).values());
+    //   upsertGovernmentStations(unique).catch(err =>
+    //     console.error('[Supabase] Failed to upsert government stations', err)
+    //   );
+    //   return unique;
+    // } catch (e) {
+    //   console.error('Failed to fetch consolidated NCR stations', e);
+    //   return [];
+    // }
+    return [];
   }
 
   /**
    * Fetch stations for a given city
+   * NOTE: WAQI API commented out — using OpenAQ exclusively
    */
   async fetchStationsByCity(city: string): Promise<GovernmentStation[]> {
-    try {
-      const query = `${city}, India`;
-      const response = await fetch(`${BASE_URL}/search/?token=${API_TOKEN}&keyword=${encodeURIComponent(query)}`);
-      const json = await response.json();
-
-      let results = json.status === 'ok' ? json.data : [];
-      
-      // Fallback search keywords for broader match
-      if (results.length === 0) {
-        const altQuery = city === 'Gurgaon' ? 'Gurugram' : city;
-        const altRes = await fetch(`${BASE_URL}/search/?token=${API_TOKEN}&keyword=${encodeURIComponent(altQuery)}`);
-        const altJson = await altRes.json();
-        results = altJson.status === 'ok' ? altJson.data : [];
-      }
-
-      return results
-        .filter((item: any) => {
-          const name = item.station.name.toLowerCase();
-          const cityLower = city.toLowerCase();
-          return name.includes(cityLower) || 
-                 (cityLower === 'noida' && name.includes('uttar pradesh')) ||
-                 (cityLower === 'gurgaon' && name.includes('haryana')) ||
-                 (cityLower === 'faridabad' && name.includes('haryana'));
-        })
-        .map((item: any) => ({
-          uid: item.uid,
-          name: item.station.name,
-          aqi: parseInt(item.aqi) || 0,
-          time: item.station.time || new Date().toISOString(),
-          stationName: item.station.name,
-          latitude: item.station.geo[0],
-          longitude: item.station.geo[1],
-          city: city,
-          pollutants: {}
-        }));
-    } catch (e) {
-      console.error(`Failed to fetch AQI for ${city}`, e);
-      return [];
-    }
+    // ── WAQI: Commented out — using OpenAQ exclusively ────────────────────
+    // try {
+    //   const query = `${city}, India`;
+    //   const response = await fetch(`${BASE_URL}/search/?token=${API_TOKEN}&keyword=${encodeURIComponent(query)}`);
+    //   const json = await response.json();
+    //   let results = json.status === 'ok' ? json.data : [];
+    //   if (results.length === 0) {
+    //     const altQuery = city === 'Gurgaon' ? 'Gurugram' : city;
+    //     const altRes = await fetch(`${BASE_URL}/search/?token=${API_TOKEN}&keyword=${encodeURIComponent(altQuery)}`);
+    //     const altJson = await altRes.json();
+    //     results = altJson.status === 'ok' ? altJson.data : [];
+    //   }
+    //   return results.filter(...).map(...);
+    // } catch (e) {
+    //   console.error(`Failed to fetch AQI for ${city}`, e);
+    //   return [];
+    // }
+    return [];
   }
 
   /**
    * Fetch the nearest station based on IP or GPS
+   * NOTE: WAQI API commented out — using OpenAQ exclusively
    */
   async fetchNearestStation(): Promise<GovernmentStation | null> {
-    try {
-      const response = await fetch(`${BASE_URL}/feed/here/?token=${API_TOKEN}`);
-      const json = await response.json();
-      if (json.status !== 'ok') return null;
-      
-      const data = json.data;
-      return {
-        uid: data.idx,
-        name: data.city.name,
-        aqi: data.aqi,
-        time: data.time?.s || new Date().toISOString(),
-        stationName: data.city.name,
-        latitude: data.city.geo[0],
-        longitude: data.city.geo[1],
-        city: 'Nearby',
-        pollutants: {
-          pm25: data.iaqi?.pm25?.v,
-          pm10: data.iaqi?.pm10?.v
-        }
-      };
-    } catch (e) {
-      return null;
-    }
+    // ── WAQI: Commented out — using OpenAQ exclusively ────────────────────
+    // try {
+    //   const response = await fetch(`${BASE_URL}/feed/here/?token=${API_TOKEN}`);
+    //   const json = await response.json();
+    //   if (json.status !== 'ok') return null;
+    //   const data = json.data;
+    //   return {
+    //     uid: data.idx,
+    //     name: data.city.name,
+    //     aqi: data.aqi,
+    //     time: data.time?.s || new Date().toISOString(),
+    //     stationName: data.city.name,
+    //     latitude: data.city.geo[0],
+    //     longitude: data.city.geo[1],
+    //     city: 'Nearby',
+    //     pollutants: { pm25: data.iaqi?.pm25?.v, pm10: data.iaqi?.pm10?.v }
+    //   };
+    // } catch (e) {
+    //   return null;
+    // }
+    return null;
   }
 
   private async fetchStationByUid(uid: number, city: string): Promise<GovernmentStation | null> {

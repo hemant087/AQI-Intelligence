@@ -44,7 +44,7 @@ export class CloudApiAdapter implements IAqiAdapter {
     const OPENAQ_BASE = 'https://api.openaq.org/v3';
 
     try {
-      // 1. Primary: Try OpenAQ v3 (might fail on web due to CORS)
+      // ── PRIMARY: OpenAQ v3 ───────────────────────────────────────────────
       try {
         const openAqLocRes = await fetch(
           `${OPENAQ_BASE}/locations?coordinates=${lat},${lon}&radius=25000&limit=1`,
@@ -77,7 +77,14 @@ export class CloudApiAdapter implements IAqiAdapter {
               const latestData = await openAqLatestRes.json();
               if (latestData.results && latestData.results.length > 0) {
                 const measurements = latestData.results;
-                const getVal = (param: string) => measurements.find((m: any) => m.parameter.name === param)?.value;
+                // OpenAQ v3 /latest: parameter can be a string or {name:string} object
+                const getVal = (param: string) => {
+                  const match = measurements.find((m: any) => {
+                    const pName = typeof m.parameter === 'string' ? m.parameter : m.parameter?.name;
+                    return pName === param;
+                  });
+                  return match?.value ?? match?.summary?.avg ?? undefined;
+                };
 
                 const reading: AQIReading = {
                   id: `openaq_v3_${locationId}_${Date.now()}`,
@@ -95,37 +102,38 @@ export class CloudApiAdapter implements IAqiAdapter {
                   stationMetadata: { manufacturer, model, owner }
                 };
                 this.readingsSubject.next(reading);
-                return; // Success with OpenAQ
+                return; // ✅ Success — OpenAQ only
               }
             }
           }
         }
       } catch (openAqErr) {
-        // Silently continue to WAQI if OpenAQ fails (likely CORS on web)
-        console.warn("OpenAQ fetch skipped or failed:", openAqErr);
+        console.warn("OpenAQ fetch failed (likely CORS on web):", openAqErr);
       }
 
-      // 2. Fallback: WAQI (World Air Quality Index) - usually works on web
-      const waqiRes = await fetch(
-        `https://api.waqi.info/feed/geo:${lat};${lon}/?token=${process.env.EXPO_PUBLIC_WAQI_TOKEN}`,
-      );
-      if (waqiRes.ok) {
-        const data = await waqiRes.json();
-        if (data.status === "ok") {
-          const reading: AQIReading = {
-            id: `waqi_${Date.now()}`,
-            deviceId: data.data.city.url,
-            timestamp: new Date().toISOString(),
-            pm25: data.data.iaqi.pm25?.v || 0,
-            sourceType: "api",
-          };
-          this.readingsSubject.next(reading);
-        }
-      }
+      // ── WAQI FALLBACK: Commented out — using OpenAQ exclusively ──────────
+      // const waqiRes = await fetch(
+      //   `https://api.waqi.info/feed/geo:${lat};${lon}/?token=${process.env.EXPO_PUBLIC_WAQI_TOKEN}`,
+      // );
+      // if (waqiRes.ok) {
+      //   const data = await waqiRes.json();
+      //   if (data.status === "ok") {
+      //     const reading: AQIReading = {
+      //       id: `waqi_${Date.now()}`,
+      //       deviceId: data.data.city.url,
+      //       timestamp: new Date().toISOString(),
+      //       pm25: data.data.iaqi.pm25?.v || 0,
+      //       sourceType: "api",
+      //     };
+      //     this.readingsSubject.next(reading);
+      //   }
+      // }
+
     } catch (e) {
       console.error("Critical failure in CloudApiAdapter", e);
     }
   }
+
 
   async disconnect(): Promise<void> {
     if (this.pollingInterval) clearInterval(this.pollingInterval);
