@@ -1,24 +1,13 @@
 """
 AQI Intelligence — OpenAQ v3 REST API → Supabase Pipeline
 ==========================================================
-Python 3.8+ compatible. Uses requests instead of the official SDK
-(which requires Python >=3.10).
+Python 3.8+ compatible. Uses direct REST calls to bypass Supabase SDK 
+dependency conflicts (fixes the 'SyncClient' TypeError).
 
-Fetches from OpenAQ v3 API:
-  - All monitoring stations in Delhi NCR (bbox)
-  - Latest PM2.5 / PM10 / O3 / NO2 / SO2 / CO measurements
-  - Hourly historical trends
-
-Writes to Supabase:
-  - government_stations
-  - readings
-  - historical_measurements
-
-Usage:
-  python pipeline.py              # full sync
-  python pipeline.py --stations   # station metadata only
-  python pipeline.py --readings   # latest readings only
-  python pipeline.py --history    # 24h historical only
+Syncs:
+  - Monitoring stations in Delhi NCR (bbox)
+  - Latest Air Quality readings
+  - Pre-calculates US AQI scores for the dashboard
 """
 
 import os
@@ -26,10 +15,9 @@ import sys
 import uuid
 import time
 import argparse
-from datetime import datetime, timezone
 import requests
+from datetime import datetime, timezone
 from dotenv import load_dotenv
-from supabase import create_client
 
 # Force UTF-8 output on Windows
 if sys.stdout.encoding != 'utf-8':
@@ -52,25 +40,43 @@ NCR_MAX_LON = float(os.getenv("NCR_MAX_LON", "77.5"))
 OPENAQ_BASE = "https://api.openaq.org/v3"
 HEADERS     = {"X-API-Key": OPENAQ_API_KEY, "Accept": "application/json"}
 
-# ── Clients ───────────────────────────────────────────────────────────────────
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-
 def log(msg):
     ts = datetime.now(timezone.utc).strftime("%H:%M:%S")
     print(f"[{ts}] {msg}")
 
-# ── OpenAQ REST helpers ───────────────────────────────────────────────────────
+# ── AQI Calculation ──────────────────────────────────────────────────────────
 
-def openaq_get(path, params=None):
-    """GET from OpenAQ v3, raise on error."""
+def calculate_us_aqi(pm25):
+    """Calculates US EPA AQI (0-500). Ported from dashboard source."""
+    if pm25 is None or pm25 < 0: return 0
+    if pm25 <= 12.0: return round(((50 - 0) / (12.0 - 0.0)) * (pm25 - 0.0) + 0)
+    if pm25 <= 35.4: return round(((100 - 51) / (35.4 - 12.1)) * (pm25 - 12.1) + 51)
+    if pm25 <= 55.4: return round(((150 - 101) / (55.4 - 35.5)) * (pm25 - 35.5) + 101)
+    if pm25 <= 150.4: return round(((200 - 151) / (150.4 - 55.5)) * (pm25 - 55.5) + 151)
+    if pm25 <= 250.4: return round(((300 - 201) / (250.4 - 150.5)) * (pm25 - 150.5) + 201)
+    if pm25 <= 350.4: return round(((400 - 301) / (350.4 - 250.5)) * (pm25 - 250.5) + 301)
+    if pm25 <= 500.4: return round(((500 - 401) / (500.4 - 350.5)) * (pm25 - 350.5) + 401)
+    return 500
+
+# ── API Helpers ──────────────────────────────────────────────────────────────
+
+def openaq_get(path, params=None, max_retries=3):
     url = f"{OPENAQ_BASE}/{path.lstrip('/')}"
-    resp = requests.get(url, headers=HEADERS, params=params, timeout=30)
-    resp.raise_for_status()
-    return resp.json()
-
+    for attempt in range(max_retries):
+        try:
+            resp = requests.get(url, headers=HEADERS, params=params, timeout=30)
+            if resp.status_code == 429:
+                wait_time = (attempt + 1) * 3
+                log(f"  Rate limited (429). Waiting {wait_time}s...")
+                time.sleep(wait_time); continue
+            resp.raise_for_status()
+            return resp.json()
+        except:
+            if attempt == max_retries - 1: raise
+            time.sleep(1)
+    return None
 
 def fetch_all_pages(path, base_params, limit=1000):
-    """Iterate all pages of an OpenAQ list endpoint."""
     results = []
     page = 1
     while True:
@@ -78,180 +84,151 @@ def fetch_all_pages(path, base_params, limit=1000):
         data = openaq_get(path, params)
         batch = data.get("results", [])
         results.extend(batch)
-        if len(batch) < limit:
-            break
+        if len(batch) < limit: break
         page += 1
     return results
 
-# ── Supabase helpers ──────────────────────────────────────────────────────────
+def supabase_upsert(table, rows, conflict_col):
+    """Upsert into Supabase REST endpoint directly (bypasses SDK bugs)."""
+    if not rows: return
+    url = f"{SUPABASE_URL}/rest/v1/{table}"
+    headers = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": f"Bearer {SUPABASE_KEY}",
+        "Content-Type": "application/json",
+        "Prefer": f"resolution=merge-duplicates,on_conflict={conflict_col}"
+    }
+    # Security: Ensure secret is present in every row
+    for r in rows: r["app_secret"] = APP_SECRET
+    
+    BATCH_SIZE = 100
+    for i in range(0, len(rows), BATCH_SIZE):
+        chunk = rows[i:i + BATCH_SIZE]
+        resp = requests.post(url, headers=headers, json=chunk, timeout=30)
+        if not resp.ok:
+            log(f"  ❌ Supabase Error ({table}): {resp.status_code} {resp.text}")
+        else:
+            log(f"  ✅ Upserted {len(chunk)} rows → {table}")
 
-def batch_upsert(table, rows, conflict_col):
-    if not rows:
-        log(f"  ⚠️  No rows to upsert → {table}")
-        return
-    BATCH = 500
-    for i in range(0, len(rows), BATCH):
-        chunk = rows[i:i + BATCH]
-        supabase.table(table).upsert(chunk, on_conflict=conflict_col).execute()
-    log(f"  ✅ Upserted {len(rows)} rows → {table}")
-
-# ── 1. Sync Stations ─────────────────────────────────────────────────────────
+# ── Core Sync Logic ──────────────────────────────────────────────────────────
 
 def sync_stations():
-    log("📡 Fetching OpenAQ stations in Delhi NCR bbox...")
-
-    # OpenAQ v3 bbox: minLon,minLat,maxLon,maxLat
+    log("📡 Synchronizing monitoring station metadata...")
     bbox = f"{NCR_MIN_LON},{NCR_MIN_LAT},{NCR_MAX_LON},{NCR_MAX_LAT}"
     locations = fetch_all_pages("locations", {"bbox": bbox})
-    log(f"  Found {len(locations)} stations")
+    log(f"  Fetched {len(locations)} locations.")
 
     rows = []
     for loc in locations:
         coords = loc.get("coordinates") or {}
-        owners = loc.get("owners") or []
         sensors = loc.get("sensors") or []
 
-        # Find specific pollutant sensors
-        def sensor_val(pname):
+        def get_p(name):
             for s in sensors:
                 p = s.get("parameter") or {}
-                if p.get("name") == pname:
-                    latest = s.get("latest") or {}
-                    return latest.get("value")
+                # Handle v3 param objects or strings
+                p_got = p.get("name") if isinstance(p, dict) else str(p)
+                if p_got == name:
+                    return (s.get("latest") or {}).get("value")
             return None
+
+        pm25 = get_p("pm25")
+        aqi  = calculate_us_aqi(pm25) if pm25 is not None else 0
+        
+        lat = coords.get("latitude")
+        city_name = loc.get("locality") or "Delhi NCR"
+        if city_name == "Delhi NCR":
+            city_name = "Delhi Core" if (lat or 0) > 28.5 else "NCR Town Stations"
 
         rows.append({
             "uid":          loc["id"],
-            "name":         loc.get("name") or f"Station {loc['id']}",
             "station_name": loc.get("name") or f"Station {loc['id']}",
-            "aqi":          0,
-            "station_time": (loc.get("datetimeLast") or {}).get("utc") or datetime.now(timezone.utc).isoformat(),
-            "city":         loc.get("locality") or "Delhi NCR",
-            "latitude":     coords.get("latitude"),
+            "aqi":          aqi,
+            "city":         city_name,
+            "latitude":     lat,
             "longitude":    coords.get("longitude"),
-            "pm25":         sensor_val("pm25"),
-            "pm10":         sensor_val("pm10"),
-            "o3":           sensor_val("o3"),
-            "no2":          sensor_val("no2"),
-            "so2":          sensor_val("so2"),
-            "co":           sensor_val("co"),
+            "pm25":         pm25,
+            "pm10":         get_p("pm10"),
+            "o3":           get_p("o3"),
+            "no2":          get_p("no2"),
+            "so2":          get_p("so2"),
+            "co":           get_p("co"),
+            "station_time": (loc.get("datetimeLast") or {}).get("utc") or datetime.now(timezone.utc).isoformat(),
             "last_updated": datetime.now(timezone.utc).isoformat(),
-            "app_secret":   APP_SECRET,
         })
 
-    batch_upsert("government_stations", rows, "uid")
-    return locations
+    # We do not upsert here anymore; we wait for sync_latest_data to fill the live metrics.
+    return rows, locations
 
-# ── 2. Sync Latest Readings ──────────────────────────────────────────────────
-
-def sync_latest_readings(locations):
-    log(f"📊 Fetching latest measurements for {len(locations)} stations...")
-
-    rows = []
-    for loc in locations:
+def sync_latest_data(rows, locations):
+    log(f"📊 Syncing latest data for {len(locations)} stations...")
+    
+    reading_rows = []
+    
+    for row, loc in zip(rows, locations):
         loc_id = loc["id"]
-        try:
-            data = openaq_get(f"locations/{loc_id}/latest")
-            measurements = data.get("results", [])
-
-            pollutants = {}
-            for m in measurements:
-                p = m.get("parameter") or {}
-                pname = p.get("name") if isinstance(p, dict) else p
-                val = m.get("value")
-                if pname and val is not None:
-                    pollutants[pname] = val
-
-            coords = loc.get("coordinates") or {}
-            rows.append({
-                "id":          str(uuid.uuid4()),
-                "device_id":   str(loc_id),
-                "timestamp":   datetime.now(timezone.utc).isoformat(),
-                "pm25":        pollutants.get("pm25") or 0,
-                "pm10":        pollutants.get("pm10"),
-                "o3":          pollutants.get("o3"),
-                "no2":         pollutants.get("no2"),
-                "so2":         pollutants.get("so2"),
-                "co":          pollutants.get("co"),
-                "source_type": "api",
-                "latitude":    coords.get("latitude"),
-                "longitude":   coords.get("longitude"),
-                "context_tag": "outdoor",
-                "app_secret":  APP_SECRET,
-            })
-        except Exception as e:
-            log(f"  ⚠️  Skipped location {loc_id}: {e}")
-
-    batch_upsert("readings", rows, "id")
-
-# ── 3. Sync Historical Measurements ─────────────────────────────────────────
-
-def sync_historical(locations, parameter="pm25", hours=24):
-    log(f"📈 Fetching {hours}h historical {parameter.upper()} data...")
-
-    rows = []
-    for loc in locations:
+        # Build local sensor map for this location using the metadata
         sensors = loc.get("sensors") or []
-        sensor_id = None
+        s_map = {}
         for s in sensors:
             p = s.get("parameter") or {}
-            if (p.get("name") if isinstance(p, dict) else p) == parameter:
-                sensor_id = s.get("id")
-                break
-        if not sensor_id:
-            continue
+            p_got = p.get("name") if isinstance(p, dict) else str(p)
+            if p_got:
+                s_map[s.get("id")] = p_got
 
         try:
-            data = openaq_get(
-                f"sensors/{sensor_id}/measurements",
-                {"period_name": "hour", "limit": hours}
-            )
-            for m in data.get("results", []):
-                period = m.get("period") or {}
-                dt_from = (period.get("datetimeFrom") or {}).get("utc") or datetime.now(timezone.utc).isoformat()
-                rows.append({
-                    "sensor_id":   str(sensor_id),
-                    "location_id": str(loc["id"]),
-                    "parameter":   parameter,
-                    "value":       m.get("value") or 0,
-                    "measured_at": dt_from,
-                    "app_secret":  APP_SECRET,
-                })
+            # v3 /locations/{id}/latest
+            data = openaq_get(f"locations/{loc_id}/latest")
+            results = data.get("results", [])
+            
+            pollutants = {}
+            for res in results:
+                # In /latest, each result is mapped to sensorsId
+                s_id = res.get("sensorsId")
+                pname = s_map.get(s_id)
+                val = res.get("value")
+                if pname and val is not None:
+                    pollutants[pname] = val
+            
+            pm25 = pollutants.get("pm25")
+            aqi = calculate_us_aqi(pm25) if pm25 is not None else 0
+
+            # Update the row object IN PLACE
+            row["aqi"] = aqi
+            row["pm25"] = pm25
+            row["pm10"] = pollutants.get("pm10")
+            row["o3"] = pollutants.get("o3")
+            row["no2"] = pollutants.get("no2")
+            row["so2"] = pollutants.get("so2")
+            row["co"] = pollutants.get("co")
+            row["last_updated"] = datetime.now(timezone.utc).isoformat()
+
+            # Add to readings table
+            if pm25 is not None:
+                 reading_rows.append({
+                     "id": str(uuid.uuid4()),
+                     "device_id": str(loc_id),
+                     "timestamp": datetime.now(timezone.utc).isoformat(),
+                     "pm25": pm25,
+                     "source_type": "api"
+                 })
+            
+            # Rate limit protection
+            time.sleep(0.25)
+                     
         except Exception as e:
-            log(f"  ⚠️  Skipped history for sensor {sensor_id}: {e}")
+            log(f"  ⚠️  Skipped {loc_id}: {e}")
 
-    batch_upsert("historical_measurements", rows, "sensor_id,measured_at,parameter")
-
-# ── Main ──────────────────────────────────────────────────────────────────────
+    # Final updates
+    supabase_upsert("government_stations", rows, "uid")
+    supabase_upsert("readings", reading_rows, "id")
 
 def main():
-    parser = argparse.ArgumentParser(description="AQI Intelligence → Supabase Pipeline")
-    parser.add_argument("--stations", action="store_true", help="Sync stations only")
-    parser.add_argument("--readings", action="store_true", help="Sync readings only")
-    parser.add_argument("--history",  action="store_true", help="Sync historical data only")
-    args = parser.parse_args()
-
-    run_all = not (args.stations or args.readings or args.history)
-
-    log("🚀 AQI Intelligence Data Pipeline starting...")
-    log(f"   Supabase : {SUPABASE_URL}")
-    log(f"   BBox     : ({NCR_MIN_LAT},{NCR_MIN_LON}) → ({NCR_MAX_LAT},{NCR_MAX_LON})")
-
-    if args.stations or run_all:
-        locations = sync_stations()
-    else:
-        log("📡 Loading location list (no upsert)...")
-        bbox = f"{NCR_MIN_LON},{NCR_MIN_LAT},{NCR_MAX_LON},{NCR_MAX_LAT}"
-        locations = fetch_all_pages("locations", {"bbox": bbox})
-
-    if args.readings or run_all:
-        sync_latest_readings(locations)
-
-    if args.history or run_all:
-        sync_historical(locations, parameter="pm25", hours=24)
-
-    log("✅ Pipeline complete!")
-
+    log("🚀 Pipeline V5 starting...")
+    rows, locations = sync_stations()
+    if locations:
+        sync_latest_data(rows, locations)
+    log("✅ Pipeline run finished. AQI data now synced.")
 
 if __name__ == "__main__":
     main()

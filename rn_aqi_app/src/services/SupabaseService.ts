@@ -224,11 +224,41 @@ export async function getStationsByCity(city: string): Promise<GovernmentStation
   return (data ?? []).map(mapRowToStation);
 }
 
+/**
+ * Get ALL stations (used on web where city='Delhi NCR' for pipeline-seeded data).
+ */
+export async function getAllStations(limit = 200): Promise<GovernmentStation[]> {
+  const { data, error } = await getClient()
+    .from('government_stations')
+    .select('*')
+    .order('station_name', { ascending: true })
+    .limit(limit);
+  if (error) { logError('getAllStations', error); return []; }
+  return (data ?? []).map(mapRowToStation);
+}
+
+/**
+ * Find the nearest station from the cloud cache.
+ */
+export async function findNearestStation(lat: number, lon: number): Promise<GovernmentStation | null> {
+  const all = await getAllStations(500);
+  if (!all.length) return null;
+
+  // Simple Euclidean distance for the sort
+  const sorted = all.sort((a, b) => {
+    const dA = Math.sqrt(Math.pow(a.latitude - lat, 2) + Math.pow(a.longitude - lon, 2));
+    const dB = Math.sqrt(Math.pow(b.latitude - lat, 2) + Math.pow(b.longitude - lon, 2));
+    return dA - dB;
+  });
+
+  return sorted[0] || null;
+}
+
 function mapRowToStation(row: any): GovernmentStation {
   return {
     uid: row.uid,
-    name: row.name,
-    stationName: row.station_name ?? row.name,
+    name: row.station_name || row.name || 'Unknown Station',
+    stationName: row.station_name || row.name || 'Unknown Station',
     aqi: row.aqi,
     time: row.station_time,
     city: row.city,
@@ -382,6 +412,8 @@ export const supabaseService = {
   upsertGovernmentStation,
   upsertGovernmentStations,
   getStationsByCity,
+  getAllStations,
+  findNearestStation,
   // News
   upsertNewsArticle,
   upsertNewsArticles,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, ScrollView, View, Text, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
+import { StyleSheet, ScrollView, View, Text, SafeAreaView, StatusBar, TouchableOpacity, Platform } from 'react-native';
 import { useAqiData } from '../../src/hooks/useAqiData';
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { locationService } from '../../src/services/LocationService';
@@ -8,6 +8,8 @@ import { getAQILevel } from '../../src/models/AqiReading';
 import * as Location from 'expo-location';
 import { AqiTrendChart } from '../../components/AqiTrendChart';
 import { openAqHistoricalService, HistoricalDataPoint } from '../../src/services/OpenAqHistoricalService';
+
+import { supabaseService } from '../../src/services/SupabaseService';
 
 export default function DashboardScreen() {
   const { latestReading, aqiScore, aqiInfo, healthRecommendation, connectionState } = useAqiData();
@@ -18,6 +20,7 @@ export default function DashboardScreen() {
 
   useEffect(() => {
     if (latestReading?.deviceId && latestReading.sourceType === 'api') {
+      // For official stations, we use the deviceId as locationId
       openAqHistoricalService.fetchHourlyTrends(latestReading.deviceId)
         .then(setHistoricalData);
     }
@@ -34,21 +37,37 @@ export default function DashboardScreen() {
           setUserCoords({ latitude: userLat, longitude: userLon });
           
           // Reverse geocode to get city
-          const addressData = await Location.reverseGeocodeAsync(loc.coords);
-          let city = 'Delhi'; // Default
-          // Fetch ALL NCR stations and find the TRULY nearest one
-          const allStations = await governmentAqiService.fetchAllNcrStations();
-          if (allStations && allStations.length > 0) {
-            const sorted = allStations.sort((a, b) => {
-              const distA = locationService.calculateDistance(userLat, userLon, a.latitude, a.longitude);
-              const distB = locationService.calculateDistance(userLat, userLon, b.latitude, b.longitude);
-              return distA - distB;
-            });
-            setNearestStation(sorted[0]);
+          Location.reverseGeocodeAsync(loc.coords).then(addr => {
+            if (addr?.[0]) {
+              const region = addr[0].district || addr[0].city || addr[0].subregion || 'Delhi';
+              setLiveAddress(`${addr[0].name || ''} ${addr[0].street || ''}, ${region}`);
+            }
+          });
+
+          // Fetch Nearest Station from Cloud (Supabase) or OpenAQ (Native)
+          if (Platform.OS === 'web') {
+             const near = await supabaseService.findNearestStation(userLat, userLon);
+             if (near) setNearestStation(near);
           } else {
-            // Fallback to legacy nearest logic
-            const station = await governmentAqiService.fetchNearestStation();
-            if (station) setNearestStation(station);
+             const allStations = await openAqHistoricalService.fetchLocationsByBBox(
+               userLat - 0.1, userLon - 0.1, userLat + 0.1, userLon + 0.1
+             );
+             if (allStations && allStations.length > 0) {
+               // Sort by distance
+               const sorted = allStations.sort((a: any, b: any) => {
+                 const dA = locationService.calculateDistance(userLat, userLon, a.coordinates.latitude, a.coordinates.longitude);
+                 const dB = locationService.calculateDistance(userLat, userLon, b.coordinates.latitude, b.coordinates.longitude);
+                 return dA - dB;
+               });
+               const best = sorted[0];
+               setNearestStation({
+                 uid: best.id,
+                 name: best.name,
+                 aqi: best.sensors?.[0]?.latest?.value || 0,
+                 latitude: best.coordinates.latitude,
+                 longitude: best.coordinates.longitude,
+               });
+             }
           }
         }
       }
@@ -64,7 +83,7 @@ export default function DashboardScreen() {
       nearestStation.latitude, 
       nearestStation.longitude
     );
-    return `Nearest Monitor : ${dist.toFixed(2)} km`;
+    return `Monitor Dist: ${dist.toFixed(2)} km`;
   };
 
   const getLightColor = (color: string) => `${color}20`; // 12% opacity hex
@@ -93,12 +112,16 @@ export default function DashboardScreen() {
       >
         {/* Main AQI Card */}
         <View style={styles.mainCard}>
-          <Text style={styles.aqiLabel}>US AQI</Text>
+          <Text style={styles.aqiLabel}>
+            {latestReading?.sourceType === 'bluetooth' ? 'PERSONAL DEVICE AQI' : 'NEARBY MONITORING STATION'}
+          </Text>
           <Text style={styles.aqiValue}>{aqiScore !== null ? aqiScore : '--'}</Text>
           <View style={[styles.levelBadge, { backgroundColor: aqiInfo.color }]}>
             <Text style={styles.levelText}>{aqiInfo.level}</Text>
           </View>
-          <Text style={styles.mainPollutantLabel}>Main Pollutant: PM2.5</Text>
+          <Text style={styles.mainPollutantLabel}>
+            Main Pollutant: PM2.5 {latestReading?.sourceType === 'api' ? `(${latestReading.stationMetadata?.owner || 'OpenAQ'})` : ''}
+          </Text>
         </View>
 
         {/* Health Recommendation Card */}

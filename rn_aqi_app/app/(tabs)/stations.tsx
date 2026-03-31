@@ -4,7 +4,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 // GovernmentAqiService (WAQI) commented out — using OpenAQ exclusively
 // import { governmentAqiService } from '../../src/services/GovernmentAqiService';
 import { openAqHistoricalService } from '../../src/services/OpenAqHistoricalService';
-import { getStationsByCity } from '../../src/services/SupabaseService';
+import { getAllStations } from '../../src/services/SupabaseService';
 import { getAQILevel } from '../../src/models/AqiReading';
 
 // Delhi NCR bounding box
@@ -34,19 +34,19 @@ export default function StationsScreen() {
     if (!isRefresh) setLoading(true);
 
     if (Platform.OS === 'web') {
-      // ☁️ Web: OpenAQ blocks CORS from browsers — load from Supabase cloud cache
+      // Web: OpenAQ blocks CORS from browsers — load all stations from Supabase cloud cache
+      // (pipeline stores all NCR stations under city='Delhi NCR')
       setWebFallback(true);
-      const cities = ['Delhi', 'Noida', 'Gurgaon', 'Ghaziabad', 'Faridabad'];
-      const results = await Promise.all(cities.map(c => getStationsByCity(c)));
-      const all = results.flat();
+      const all = await getAllStations(200);
       if (all.length > 0) {
         setStations(all.map(s => ({
-          uid: s.uid,
-          name: s.stationName || s.name,
-          city: s.city,
-          sensors: s.pollutants ? Object.values(s.pollutants).filter(Boolean).length : 0,
-          owner: 'OpenAQ (cached)',
-          aqi: s.aqi,
+          uid:     s.uid,
+          name:    s.stationName || s.name,
+          city:    s.city,
+          sensors: s.pollutants ? Object.values(s.pollutants).filter(v => v != null).length : 0,
+          owner:   'OpenAQ (cached)',
+          pm25:    s.pollutants?.pm25 ?? null,
+          aqi:     s.aqi,
         })));
       }
     } else {
@@ -125,17 +125,23 @@ export default function StationsScreen() {
             </View>
           )}
           renderItem={({ item }: { item: any }) => {
+            const hasPm25 = item.pm25 != null && item.pm25 > 0;
+            const badgeValue = hasPm25 ? Math.round(item.pm25) : item.sensors;
+            const badgeLabel = hasPm25 ? 'PM2.5' : 'SNSR';
+            const badgeColor = hasPm25
+              ? (item.pm25 < 12 ? '#4CAF50' : item.pm25 < 35 ? '#FFC107' : item.pm25 < 55 ? '#FF9800' : '#F44336')
+              : '#00B0FF';
             return (
               <View style={styles.stationCard}>
-                <View style={[styles.statusLine, { backgroundColor: '#00B0FF' }]} />
+                <View style={[styles.statusLine, { backgroundColor: badgeColor }]} />
                 <View style={styles.cardBody}>
                   <View style={styles.stationMain}>
                     <Text style={styles.stationName} numberOfLines={2}>{item.name}</Text>
-                    <Text style={styles.updateTime}>{item.owner} • {item.sensors} sensor{item.sensors !== 1 ? 's' : ''}</Text>
+                    <Text style={styles.updateTime}>{item.city} • {item.owner}</Text>
                   </View>
-                  <View style={[styles.aqiBadge, { backgroundColor: '#00B0FF' }]}>
-                    <Text style={styles.aqiValue}>{item.sensors}</Text>
-                    <Text style={styles.aqiLabel}>SNSR</Text>
+                  <View style={[styles.aqiBadge, { backgroundColor: badgeColor }]}>
+                    <Text style={styles.aqiValue}>{badgeValue ?? '—'}</Text>
+                    <Text style={styles.aqiLabel}>{badgeLabel}</Text>
                   </View>
                 </View>
               </View>

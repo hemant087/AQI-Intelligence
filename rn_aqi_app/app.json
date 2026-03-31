@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "rn_aqi_app",
-    "slug": "rn_aqi_app",
+    "name": "AQI Intelligence",
+    "slug": "aqi-intelligence",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "rnaqiapp",
+    "scheme": "aqiintelligence",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash-icon.png",
@@ -31,7 +31,7 @@
         "android.permission.BLUETOOTH_CONNECT",
         "android.permission.BLUETOOTH_SCAN"
       ],
-      "package": "com.anonymous.rn_aqi_app"
+      "package": "com.anonymous.aqi_intelligence"
     },
     "web": {
       "bundler": "metro",

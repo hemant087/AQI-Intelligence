@@ -1,0 +1,2172 @@
+[
+  {
+    "uid": 5616,
+    "station_name": "Sector - 62, Noida, UP - IMD",
+    "latitude": 28.6245,
+    "longitude": 77.3577,
+    "sensorMap": {
+      "12234715": "co",
+      "12234716": "no",
+      "12234717": "no2",
+      "14340703": "nox",
+      "12234718": "o3",
+      "12234719": "pm10",
+      "12234720": "pm25"
+    }
+  },
+  {
+    "uid": 5754,
+    "station_name": "Jawaharlal Nehru Stadium, Delhi - DPCC",
+    "latitude": 28.5828,
+    "longitude": 77.2322,
+    "sensorMap": {
+      "15548": "co",
+      "15547": "no2",
+      "15550": "o3",
+      "15619": "pm10",
+      "15620": "pm25",
+      "15552": "so2"
+    }
+  },
+  {
+    "uid": 5755,
+    "station_name": "Major Dhyan Chand National Stadium, Delhi - DPCC",
+    "latitude": 28.6125,
+    "longitude": 77.2352,
+    "sensorMap": {
+      "15582": "co",
+      "15574": "no2",
+      "15586": "o3",
+      "15549": "pm10",
+      "15551": "pm25",
+      "15587": "so2"
+    }
+  },
+  {
+    "uid": 5759,
+    "station_name": "Sonia Vihar, Delhi - DPCC",
+    "latitude": 28.6779,
+    "longitude": 77.2987,
+    "sensorMap": {
+      "15568": "co",
+      "15567": "no2",
+      "15566": "o3",
+      "15591": "pm10",
+      "15595": "pm25",
+      "15565": "so2"
+    }
+  },
+  {
+    "uid": 5760,
+    "station_name": "Dwarka-Sector 8, Delhi - DPCC ",
+    "latitude": 28.5207,
+    "longitude": 76.8024,
+    "sensorMap": {
+      "15594": "co",
+      "15593": "no2",
+      "15592": "o3",
+      "15569": "pm10",
+      "15570": "pm25",
+      "15590": "so2"
+    }
+  },
+  {
+    "uid": 5761,
+    "station_name": "Jahangirpuri, Delhi - DPCC",
+    "latitude": 28.7258,
+    "longitude": 77.1606,
+    "sensorMap": {
+      "15578": "co",
+      "15572": "no2",
+      "15577": "o3",
+      "15623": "pm10",
+      "15621": "pm25",
+      "15585": "so2"
+    }
+  },
+  {
+    "uid": 5762,
+    "station_name": "Ashok Vihar, Delhi - DPCC",
+    "latitude": 28.6957,
+    "longitude": 77.1813,
+    "sensorMap": {
+      "15583": "co",
+      "15584": "no2",
+      "15573": "o3",
+      "15605": "pm10",
+      "15602": "pm25",
+      "15579": "so2"
+    }
+  },
+  {
+    "uid": 5763,
+    "station_name": "Narela, Delhi - DPCC",
+    "latitude": 28.8447,
+    "longitude": 77.0333,
+    "sensorMap": {
+      "15576": "co",
+      "15581": "no2",
+      "15580": "o3",
+      "15609": "pm10",
+      "15606": "pm25",
+      "15575": "so2"
+    }
+  },
+  {
+    "uid": 5765,
+    "station_name": "Okhla Phase-2, Delhi - DPCC",
+    "latitude": 28.5366,
+    "longitude": 77.2665,
+    "sensorMap": {
+      "15597": "co",
+      "15600": "no2",
+      "15598": "o3",
+      "15624": "pm10",
+      "15627": "pm25",
+      "15599": "so2"
+    }
+  },
+  {
+    "uid": 5766,
+    "station_name": "Nehru Nagar, Delhi - DPCC",
+    "latitude": 28.564,
+    "longitude": 77.2588,
+    "sensorMap": {
+      "15607": "co",
+      "15612": "no2",
+      "15616": "o3",
+      "15625": "pm10",
+      "15626": "pm25",
+      "15608": "so2"
+    }
+  },
+  {
+    "uid": 6314,
+    "station_name": "NISE Gwal Pahari, Gurugram - IMD",
+    "latitude": 28.4229,
+    "longitude": 76.8497,
+    "sensorMap": {
+      "17561": "co",
+      "17562": "no2",
+      "17563": "pm10",
+      "17564": "pm25"
+    }
+  },
+  {
+    "uid": 6356,
+    "station_name": "Pusa, Delhi - DPCC",
+    "latitude": 28.6396,
+    "longitude": 77.1463,
+    "sensorMap": {
+      "12235316": "co",
+      "12235317": "no",
+      "12235318": "no2",
+      "14340817": "nox",
+      "12235319": "o3",
+      "12235320": "pm10",
+      "12235321": "pm25",
+      "12235322": "relativehumidity",
+      "12235323": "so2",
+      "12235324": "temperature",
+      "14340818": "wind_direction",
+      "14340819": "wind_speed"
+    }
+  },
+  {
+    "uid": 6357,
+    "station_name": "Punjabi Bagh, Delhi - DPCC",
+    "latitude": 28.674,
+    "longitude": 77.131,
+    "sensorMap": {
+      "17769": "co",
+      "17771": "no2",
+      "17774": "o3",
+      "17768": "pm10",
+      "17776": "pm25",
+      "17778": "so2"
+    }
+  },
+  {
+    "uid": 6358,
+    "station_name": "Mandir Marg, New Delhi - DPCC",
+    "latitude": 28.6364,
+    "longitude": 77.2011,
+    "sensorMap": {
+      "12234773": "co",
+      "17772": "co",
+      "12234774": "no",
+      "12234775": "no2",
+      "17773": "no2",
+      "14340710": "nox",
+      "17777": "o3",
+      "12234776": "o3",
+      "17775": "pm10",
+      "12234777": "pm10",
+      "17770": "pm25",
+      "12234778": "pm25",
+      "12234779": "relativehumidity",
+      "17779": "so2",
+      "12234780": "so2",
+      "12234781": "temperature",
+      "14340711": "wind_direction",
+      "14340712": "wind_speed"
+    }
+  },
+  {
+    "uid": 6359,
+    "station_name": "IHBAS, Dilshad Garden,New Delhi - CPCB",
+    "latitude": 28.6812,
+    "longitude": 77.3025,
+    "sensorMap": {
+      "17792": "co",
+      "12234730": "co",
+      "12234731": "no",
+      "17791": "no2",
+      "12234732": "no2",
+      "14341689": "nox",
+      "36058": "o3",
+      "12234733": "o3",
+      "12234734": "pm10",
+      "36050": "pm10",
+      "17790": "pm25",
+      "12234735": "pm25",
+      "12234736": "relativehumidity",
+      "17780": "so2",
+      "12234737": "so2",
+      "12234738": "temperature",
+      "14341691": "wind_direction",
+      "14341693": "wind_speed"
+    }
+  },
+  {
+    "uid": 6924,
+    "station_name": "Indirapuram, Ghaziabad - UPPCB",
+    "latitude": 28.6462,
+    "longitude": 77.3581,
+    "sensorMap": {
+      "12235774": "co",
+      "19888": "co",
+      "12235775": "no",
+      "19885": "no2",
+      "12235776": "no2",
+      "14341933": "nox",
+      "19883": "o3",
+      "12235777": "o3",
+      "12235778": "pm10",
+      "19886": "pm10",
+      "19884": "pm25",
+      "12235779": "pm25",
+      "12235780": "relativehumidity",
+      "19887": "so2",
+      "12235781": "so2",
+      "12235782": "temperature",
+      "14340908": "wind_direction",
+      "14340909": "wind_speed"
+    }
+  },
+  {
+    "uid": 6929,
+    "station_name": "Major Dhyan Chand National Stadium, Delhi - DPCC",
+    "latitude": 28.6113,
+    "longitude": 77.2377,
+    "sensorMap": {
+      "12235042": "co",
+      "19901": "co",
+      "12235043": "no",
+      "12235044": "no2",
+      "19902": "no2",
+      "14340752": "nox",
+      "12235045": "o3",
+      "19903": "o3",
+      "19904": "pm10",
+      "12235046": "pm10",
+      "19900": "pm25",
+      "12235047": "pm25",
+      "12235048": "relativehumidity",
+      "19899": "so2",
+      "12235049": "so2",
+      "12235050": "temperature",
+      "14340753": "wind_direction",
+      "14340754": "wind_speed"
+    }
+  },
+  {
+    "uid": 6931,
+    "station_name": "Dwarka-Sector 8, Delhi - DPCC ",
+    "latitude": 28.571,
+    "longitude": 77.0719,
+    "sensorMap": {
+      "12235015": "co",
+      "19957": "co",
+      "12235016": "no",
+      "12235017": "no2",
+      "19956": "no2",
+      "14340743": "nox",
+      "12235018": "o3",
+      "19954": "o3",
+      "19906": "pm10",
+      "12235019": "pm10",
+      "20150": "pm25",
+      "12235020": "pm25",
+      "12235021": "relativehumidity",
+      "12235022": "so2",
+      "20147": "so2",
+      "12235023": "temperature",
+      "14340744": "wind_direction",
+      "14340745": "wind_speed"
+    }
+  },
+  {
+    "uid": 6932,
+    "station_name": "Alipur, Delhi - DPCC",
+    "latitude": 28.8153,
+    "longitude": 77.153,
+    "sensorMap": {
+      "12235693": "co",
+      "19939": "co",
+      "12235694": "no",
+      "19948": "no2",
+      "12235695": "no2",
+      "14340882": "nox",
+      "12235696": "o3",
+      "19950": "o3",
+      "12235697": "pm10",
+      "19936": "pm10",
+      "19935": "pm25",
+      "12235698": "pm25",
+      "12235699": "relativehumidity",
+      "12235700": "so2",
+      "19912": "so2",
+      "12235701": "temperature",
+      "14340883": "wind_direction",
+      "14340884": "wind_speed"
+    }
+  },
+  {
+    "uid": 4712609,
+    "station_name": "Air Check",
+    "latitude": 28.6231,
+    "longitude": 77.2342,
+    "sensorMap": {
+      "15289074": "pm1",
+      "15289075": "pm25",
+      "15289076": "relativehumidity",
+      "15289077": "temperature",
+      "15289078": "um003"
+    }
+  },
+  {
+    "uid": 6105800,
+    "station_name": "Sector 1, Noida extension",
+    "latitude": 28.5835,
+    "longitude": 77.4317,
+    "sensorMap": {
+      "14453756": "pm1",
+      "14453757": "pm25",
+      "14453758": "relativehumidity",
+      "14453759": "temperature",
+      "14453760": "um003"
+    }
+  },
+  {
+    "uid": 6119272,
+    "station_name": "Sector - 5, Vasundhara, Ghaziabad, Uttar Pradesh ",
+    "latitude": 28.6584,
+    "longitude": 77.3781,
+    "sensorMap": {
+      "14551754": "pm1",
+      "14551755": "pm25",
+      "14551756": "relativehumidity",
+      "14551757": "temperature",
+      "14551758": "um003"
+    }
+  },
+  {
+    "uid": 6125489,
+    "station_name": "Uptitude Cloud Pvt Ltd",
+    "latitude": 28.4024,
+    "longitude": 77.0848,
+    "sensorMap": {
+      "14598775": "pm1",
+      "14598776": "pm25",
+      "14598777": "relativehumidity",
+      "14598778": "temperature",
+      "14598779": "um003"
+    }
+  },
+  {
+    "uid": 6145551,
+    "station_name": "Anand Lok",
+    "latitude": 28.5587,
+    "longitude": 77.2189,
+    "sensorMap": {
+      "14745877": "pm1",
+      "14745878": "pm25",
+      "14745879": "relativehumidity",
+      "14745880": "temperature",
+      "14745881": "um003"
+    }
+  },
+  {
+    "uid": 6148686,
+    "station_name": "IIT Delhi, Delhi - IITM",
+    "latitude": 28.5425,
+    "longitude": 77.1917,
+    "sensorMap": {
+      "14769468": "co",
+      "14769469": "no",
+      "14769470": "no2",
+      "14769471": "nox",
+      "14769472": "o3",
+      "14769473": "pm10",
+      "14769474": "pm25"
+    }
+  },
+  {
+    "uid": 6254594,
+    "station_name": "Talkatora Garden, Delhi - DPCC",
+    "latitude": 28.6218,
+    "longitude": 77.1945,
+    "sensorMap": {
+      "15554202": "co",
+      "15554203": "no",
+      "15554204": "no2",
+      "15554205": "nox",
+      "15554206": "o3",
+      "15554207": "pm10",
+      "15554208": "pm25",
+      "15554209": "relativehumidity",
+      "15554210": "so2",
+      "15554211": "temperature",
+      "15554212": "wind_direction",
+      "15554213": "wind_speed"
+    }
+  },
+  {
+    "uid": 6254663,
+    "station_name": "JNU, Delhi - DPCC",
+    "latitude": 28.5407,
+    "longitude": 77.1685,
+    "sensorMap": {
+      "15554698": "co",
+      "15554699": "no",
+      "15554700": "no2",
+      "15554701": "nox",
+      "15554702": "o3",
+      "15554703": "pm10",
+      "15554704": "pm25",
+      "15554705": "relativehumidity",
+      "15554706": "so2",
+      "15554707": "temperature",
+      "15554708": "wind_direction",
+      "15554709": "wind_speed"
+    }
+  },
+  {
+    "uid": 6254664,
+    "station_name": "NSUT Jaffarpur, Delhi - DPCC",
+    "latitude": 28.594,
+    "longitude": 76.9094,
+    "sensorMap": {
+      "15554710": "co",
+      "15554711": "no",
+      "15554712": "no2",
+      "15554713": "nox",
+      "15554714": "o3",
+      "15554715": "pm10",
+      "15554716": "pm25",
+      "15554717": "relativehumidity",
+      "15554718": "so2",
+      "15554719": "temperature",
+      "15554720": "wind_direction",
+      "15554721": "wind_speed"
+    }
+  },
+  {
+    "uid": 6254665,
+    "station_name": "Commonwealth Sports Complex, Delhi - DPCC",
+    "latitude": 28.6158,
+    "longitude": 77.272,
+    "sensorMap": {
+      "15554722": "co",
+      "15554723": "no",
+      "15554724": "no2",
+      "15554725": "nox",
+      "15554726": "o3",
+      "15554727": "pm10",
+      "15554728": "pm25",
+      "15554729": "relativehumidity",
+      "15554730": "so2",
+      "15554731": "temperature",
+      "15554732": "wind_direction",
+      "15554733": "wind_speed"
+    }
+  },
+  {
+    "uid": 6254666,
+    "station_name": "IGNOU_Maidan Garhi, Delhi - DPCC",
+    "latitude": 28.4936,
+    "longitude": 77.2012,
+    "sensorMap": {
+      "15554734": "co",
+      "15554735": "no",
+      "15554736": "no2",
+      "15554737": "nox",
+      "15554738": "o3",
+      "15554739": "pm10",
+      "15554740": "pm25",
+      "15554741": "relativehumidity",
+      "15554742": "so2",
+      "15554743": "temperature",
+      "15554744": "wind_direction",
+      "15554745": "wind_speed"
+    }
+  },
+  {
+    "uid": 6257818,
+    "station_name": "Cantonment Area, Delhi - DPCC",
+    "latitude": 28.5942,
+    "longitude": 77.1251,
+    "sensorMap": {
+      "15578285": "co",
+      "15578286": "no",
+      "15578287": "no2",
+      "15578288": "nox",
+      "15578289": "o3",
+      "15578290": "pm10",
+      "15578291": "pm25",
+      "15578292": "relativehumidity",
+      "15578293": "so2",
+      "15578294": "temperature",
+      "15578295": "wind_direction",
+      "15578296": "wind_speed"
+    }
+  },
+  {
+    "uid": 5617,
+    "station_name": "Sector- 16A, Faridabad - HSPCB",
+    "latitude": 28.4088,
+    "longitude": 77.3099,
+    "sensorMap": {
+      "17865": "co",
+      "14887": "no2",
+      "15229": "o3",
+      "17547": "pm10",
+      "14930": "pm25",
+      "15107": "so2"
+    }
+  },
+  {
+    "uid": 5622,
+    "station_name": "NSIT Dwarka, Delhi - CPCB",
+    "latitude": 28.6091,
+    "longitude": 77.0325,
+    "sensorMap": {
+      "14916": "co",
+      "12234739": "co",
+      "12234740": "no",
+      "12234741": "no2",
+      "14919": "no2",
+      "14341688": "nox",
+      "14920": "o3",
+      "12234742": "o3",
+      "12234743": "pm10",
+      "34957": "pm10",
+      "12234744": "pm25",
+      "14922": "pm25",
+      "12234745": "relativehumidity",
+      "12234746": "so2",
+      "14923": "so2",
+      "12234747": "temperature",
+      "14341690": "wind_direction",
+      "14341692": "wind_speed"
+    }
+  },
+  {
+    "uid": 5626,
+    "station_name": "DTU, New Delhi - CPCB",
+    "latitude": 28.75,
+    "longitude": 77.1113,
+    "sensorMap": {
+      "12234755": "co",
+      "14933": "co",
+      "12234756": "no",
+      "12234757": "no2",
+      "14941": "no2",
+      "14340704": "nox",
+      "12234758": "o3",
+      "14949": "o3",
+      "12234759": "pm10",
+      "14974": "pm10",
+      "12234760": "pm25",
+      "14985": "pm25",
+      "12234761": "relativehumidity",
+      "12234762": "so2",
+      "17766": "so2",
+      "12234763": "temperature",
+      "14340705": "wind_direction",
+      "14340706": "wind_speed"
+    }
+  },
+  {
+    "uid": 5627,
+    "station_name": "CRRI Mathura Road, New Delhi - IMD",
+    "latitude": 28.5512,
+    "longitude": 77.2736,
+    "sensorMap": {
+      "12234673": "co",
+      "15098": "co",
+      "12234674": "no",
+      "15082": "no2",
+      "12234675": "no2",
+      "14340696": "nox",
+      "15063": "o3",
+      "12234676": "o3",
+      "14946": "pm10",
+      "12234677": "pm10",
+      "12234678": "pm25",
+      "14935": "pm25"
+    }
+  },
+  {
+    "uid": 5630,
+    "station_name": "Shadipur, Delhi - CPCB",
+    "latitude": 28.6515,
+    "longitude": 77.1473,
+    "sensorMap": {
+      "15119": "co",
+      "12234721": "co",
+      "12234722": "no",
+      "12234723": "no2",
+      "15053": "no2",
+      "14341721": "nox",
+      "12234724": "o3",
+      "15011": "o3",
+      "12234725": "pm10",
+      "36210": "pm10",
+      "14959": "pm25",
+      "12234726": "pm25",
+      "12234727": "relativehumidity",
+      "14952": "so2",
+      "12234728": "so2",
+      "12234729": "temperature",
+      "14341722": "wind_direction",
+      "14341723": "wind_speed"
+    }
+  },
+  {
+    "uid": 5634,
+    "station_name": "Lodhi Road, New Delhi - IMD",
+    "latitude": 28.5918,
+    "longitude": 77.2273,
+    "sensorMap": {
+      "12234709": "co",
+      "14978": "co",
+      "12234710": "no",
+      "14980": "no2",
+      "12234711": "no2",
+      "14340702": "nox",
+      "12234712": "o3",
+      "14981": "o3",
+      "12234713": "pm10",
+      "14983": "pm10",
+      "12234714": "pm25",
+      "14984": "pm25"
+    }
+  },
+  {
+    "uid": 5639,
+    "station_name": "R K Puram, New Delhi - DPCC",
+    "latitude": 28.5646,
+    "longitude": 77.167,
+    "sensorMap": {
+      "15008": "co",
+      "15030": "no2",
+      "15042": "o3",
+      "15059": "pm10",
+      "15071": "pm25",
+      "15092": "so2"
+    }
+  },
+  {
+    "uid": 5641,
+    "station_name": "Mandir Marg, New Delhi - DPCC",
+    "latitude": 28.6373,
+    "longitude": 77.2006,
+    "sensorMap": {
+      "15028": "co",
+      "15025": "no2",
+      "15023": "o3",
+      "15022": "pm10",
+      "15014": "pm25",
+      "15013": "so2"
+    }
+  },
+  {
+    "uid": 5650,
+    "station_name": "IGI Airport (T3), Delhi - IMD",
+    "latitude": 28.5628,
+    "longitude": 77.118,
+    "sensorMap": {
+      "12234691": "co",
+      "12234692": "no",
+      "12234693": "no2",
+      "14340699": "nox",
+      "12234694": "o3",
+      "12234695": "pm10",
+      "12234696": "pm25"
+    }
+  },
+  {
+    "uid": 5665,
+    "station_name": "Vasundhara, Ghaziabad - UPPCB",
+    "latitude": 28.6603,
+    "longitude": 77.3573,
+    "sensorMap": {
+      "12235155": "co",
+      "15234": "co",
+      "12235156": "no",
+      "15236": "no2",
+      "12235157": "no2",
+      "14340781": "nox",
+      "15237": "o3",
+      "12235158": "o3",
+      "12235159": "pm10",
+      "15238": "pm10",
+      "12235160": "pm25",
+      "15239": "pm25",
+      "12235161": "relativehumidity",
+      "15240": "so2",
+      "12235162": "so2",
+      "12235163": "temperature",
+      "14340782": "wind_direction",
+      "14340783": "wind_speed"
+    }
+  },
+  {
+    "uid": 5742,
+    "station_name": "Patparganj, Delhi - DPCC",
+    "latitude": 28.6311,
+    "longitude": 77.2846,
+    "sensorMap": {
+      "15498": "no2",
+      "15500": "o3",
+      "15628": "pm10",
+      "15629": "pm25",
+      "15499": "so2"
+    }
+  },
+  {
+    "uid": 5743,
+    "station_name": "Rohini, Delhi - DPCC",
+    "latitude": 28.7407,
+    "longitude": 77.0577,
+    "sensorMap": {
+      "15503": "co",
+      "15508": "no2",
+      "15506": "o3",
+      "15622": "pm10",
+      "15618": "pm25",
+      "15504": "so2"
+    }
+  },
+  {
+    "uid": 5744,
+    "station_name": "Dr. Karni Singh Shooting Range, Delhi - DPCC",
+    "latitude": 28.4997,
+    "longitude": 77.2649,
+    "sensorMap": {
+      "15510": "co",
+      "15505": "no2",
+      "15507": "o3",
+      "15588": "pm10",
+      "15589": "pm25",
+      "15509": "so2"
+    }
+  },
+  {
+    "uid": 5753,
+    "station_name": "Vivek Vihar, Delhi - DPCC",
+    "latitude": 28.6688,
+    "longitude": 77.3131,
+    "sensorMap": {
+      "15545": "co",
+      "15544": "no2",
+      "15543": "o3",
+      "15615": "pm10",
+      "15604": "pm25",
+      "15546": "so2"
+    }
+  },
+  {
+    "uid": 6934,
+    "station_name": "Dr. Karni Singh Shooting Range, Delhi - DPCC",
+    "latitude": 28.4986,
+    "longitude": 77.2648,
+    "sensorMap": {
+      "12235006": "co",
+      "19925": "co",
+      "12235007": "no",
+      "19930": "no2",
+      "12235008": "no2",
+      "14340740": "nox",
+      "12235009": "o3",
+      "19917": "o3",
+      "19941": "pm10",
+      "12235010": "pm10",
+      "12235011": "pm25",
+      "19919": "pm25",
+      "12235012": "relativehumidity",
+      "19943": "so2",
+      "12235013": "so2",
+      "12235014": "temperature",
+      "14340741": "wind_direction",
+      "14340742": "wind_speed"
+    }
+  },
+  {
+    "uid": 6936,
+    "station_name": "Arya Nagar, Bahadurgarh - HSPCB",
+    "latitude": 28.6701,
+    "longitude": 76.9254,
+    "sensorMap": {
+      "19940": "co",
+      "14233899": "co",
+      "14233900": "no",
+      "14233901": "no2",
+      "19945": "no2",
+      "14341893": "nox",
+      "19931": "o3",
+      "14233902": "o3",
+      "19928": "pm10",
+      "14233903": "pm10",
+      "14233904": "pm25",
+      "19922": "pm25",
+      "14233905": "relativehumidity",
+      "19920": "so2",
+      "14233906": "so2",
+      "14233907": "temperature",
+      "14341894": "wind_direction",
+      "14341895": "wind_speed"
+    }
+  },
+  {
+    "uid": 6938,
+    "station_name": "Vivek Vihar, Delhi - DPCC",
+    "latitude": 28.6723,
+    "longitude": 77.3153,
+    "sensorMap": {
+      "19926": "co",
+      "12235128": "co",
+      "12235129": "no",
+      "12235130": "no2",
+      "19929": "no2",
+      "14340778": "nox",
+      "19932": "o3",
+      "12235131": "o3",
+      "12235132": "pm10",
+      "19933": "pm10",
+      "12235133": "pm25",
+      "19934": "pm25",
+      "12235134": "relativehumidity",
+      "19938": "so2",
+      "12235135": "so2",
+      "12235136": "temperature",
+      "14340779": "wind_direction",
+      "14340780": "wind_speed"
+    }
+  },
+  {
+    "uid": 10900,
+    "station_name": "Teri Gram, Gurugram - HSPCB",
+    "latitude": 28.4275,
+    "longitude": 77.1465,
+    "sensorMap": {
+      "14516015": "co",
+      "36534": "co",
+      "14728527": "no",
+      "36535": "no2",
+      "14573420": "no2",
+      "14728528": "nox",
+      "12236249": "o3",
+      "36536": "o3",
+      "12236250": "pm10",
+      "36538": "pm10",
+      "12236251": "pm25",
+      "36539": "pm25",
+      "12236252": "relativehumidity",
+      "36540": "so2",
+      "14516016": "so2",
+      "12236253": "temperature",
+      "14340983": "wind_direction",
+      "14340984": "wind_speed"
+    }
+  },
+  {
+    "uid": 10908,
+    "station_name": "Sector 11, Faridabad - HSPCB",
+    "latitude": 28.3761,
+    "longitude": 77.3157,
+    "sensorMap": {
+      "12236240": "co",
+      "36559": "co",
+      "12236241": "no",
+      "12236242": "no2",
+      "36560": "no2",
+      "14342032": "nox",
+      "12236243": "o3",
+      "36561": "o3",
+      "36562": "pm10",
+      "12236244": "pm10",
+      "36564": "pm25",
+      "12236245": "pm25",
+      "12236246": "relativehumidity",
+      "36566": "so2",
+      "12236247": "so2",
+      "12236248": "temperature",
+      "14342033": "wind_direction",
+      "14342034": "wind_speed"
+    }
+  },
+  {
+    "uid": 10919,
+    "station_name": "Sanjay Nagar, Ghaziabad - UPPCB",
+    "latitude": 28.6854,
+    "longitude": 77.4538,
+    "sensorMap": {
+      "12235765": "co",
+      "36641": "co",
+      "12235766": "no",
+      "12235767": "no2",
+      "36645": "no2",
+      "14340905": "nox",
+      "36646": "o3",
+      "12235768": "o3",
+      "12235769": "pm10",
+      "36660": "pm10",
+      "12235770": "pm25",
+      "36675": "pm25",
+      "12235771": "relativehumidity",
+      "12235772": "so2",
+      "36676": "so2",
+      "12235773": "temperature",
+      "14340906": "wind_direction",
+      "14340907": "wind_speed"
+    }
+  },
+  {
+    "uid": 10920,
+    "station_name": "New Industrial Town, Faridabad - HSPCB",
+    "latitude": 28.3907,
+    "longitude": 77.3006,
+    "sensorMap": {
+      "12236222": "co",
+      "12236223": "no",
+      "12236224": "no2",
+      "14342026": "nox",
+      "12236225": "o3",
+      "12236226": "pm10",
+      "12236227": "pm25",
+      "12236228": "relativehumidity",
+      "12236229": "so2",
+      "12236230": "temperature",
+      "14342027": "wind_direction",
+      "14342028": "wind_speed"
+    }
+  },
+  {
+    "uid": 10921,
+    "station_name": "NISE Gwal Pahari, Gurugram - IMD",
+    "latitude": 28.4227,
+    "longitude": 77.1489,
+    "sensorMap": {
+      "12235702": "co",
+      "36700": "co",
+      "12235703": "no",
+      "36702": "no2",
+      "12235704": "no2",
+      "14340885": "nox",
+      "12235705": "o3",
+      "12235706": "pm10",
+      "36703": "pm10",
+      "36701": "pm25",
+      "12235707": "pm25"
+    }
+  },
+  {
+    "uid": 11603,
+    "station_name": "Chandni Chowk, Delhi - IITM",
+    "latitude": 28.6568,
+    "longitude": 77.2272,
+    "sensorMap": {
+      "39414": "co",
+      "12236356": "co",
+      "12236357": "no",
+      "39412": "no2",
+      "12236358": "no2",
+      "14342050": "nox",
+      "12236359": "o3",
+      "39415": "o3",
+      "39411": "pm10",
+      "12236360": "pm10",
+      "39410": "pm25",
+      "12236361": "pm25",
+      "12236362": "relativehumidity",
+      "39413": "so2",
+      "12236363": "so2",
+      "12236364": "temperature",
+      "14342051": "wind_direction",
+      "14342052": "wind_speed"
+    }
+  },
+  {
+    "uid": 11607,
+    "station_name": "Lodhi Road, Delhi - IITM",
+    "latitude": 28.5883,
+    "longitude": 77.2217,
+    "sensorMap": {
+      "39437": "co",
+      "12236374": "no2",
+      "39435": "no2",
+      "39438": "o3",
+      "12236375": "pm10",
+      "39434": "pm10",
+      "39433": "pm25",
+      "12236376": "pm25",
+      "12236377": "relativehumidity",
+      "12236378": "so2",
+      "39436": "so2",
+      "12236379": "temperature",
+      "14342054": "wind_direction",
+      "14342055": "wind_speed"
+    }
+  },
+  {
+    "uid": 2860223,
+    "station_name": "GK1 (Oberoi Terrace)",
+    "latitude": 28.55,
+    "longitude": 77.2431,
+    "sensorMap": {
+      "9320365": "pm1",
+      "9320368": "pm10",
+      "9320367": "pm25",
+      "9320350": "relativehumidity",
+      "9320356": "temperature",
+      "9320361": "um003"
+    }
+  },
+  {
+    "uid": 3024966,
+    "station_name": "NASA GSFC Rutgers Calib. N8",
+    "latitude": 28.3173,
+    "longitude": 76.916,
+    "sensorMap": {
+      "10326358": "pm25"
+    }
+  },
+  {
+    "uid": 3409496,
+    "station_name": "New Moti Bagh, Delhi - MHUA",
+    "latitude": 28.5783,
+    "longitude": 77.184,
+    "sensorMap": {
+      "15646331": "co",
+      "15646332": "no",
+      "15646333": "no2",
+      "15646334": "nox",
+      "15646335": "pm25",
+      "15646336": "relativehumidity",
+      "15646337": "temperature",
+      "15646338": "wind_direction",
+      "15646339": "wind_speed"
+    }
+  },
+  {
+    "uid": 13,
+    "station_name": "Delhi Technological University, Delhi - CPCB",
+    "latitude": 28.744,
+    "longitude": 77.12,
+    "sensorMap": {
+      "13866": "no2",
+      "24": "o3",
+      "13864": "pm25"
+    }
+  },
+  {
+    "uid": 15,
+    "station_name": "IGI Airport",
+    "latitude": 28.56,
+    "longitude": 77.094,
+    "sensorMap": {
+      "27": "co",
+      "28": "no2",
+      "29": "o3",
+      "26": "pm10",
+      "30": "pm25"
+    }
+  },
+  {
+    "uid": 16,
+    "station_name": "Civil Lines",
+    "latitude": 28.6787,
+    "longitude": 77.2262,
+    "sensorMap": {
+      "33": "co",
+      "32": "no2",
+      "31": "pm10",
+      "34": "pm25"
+    }
+  },
+  {
+    "uid": 17,
+    "station_name": "R K Puram, Delhi - DPCC",
+    "latitude": 28.5633,
+    "longitude": 77.1869,
+    "sensorMap": {
+      "392": "co",
+      "12234782": "co",
+      "12234783": "no",
+      "12234784": "no2",
+      "36": "no2",
+      "14340713": "nox",
+      "394": "o3",
+      "12234785": "o3",
+      "399": "pm10",
+      "12234786": "pm10",
+      "12234787": "pm25",
+      "35": "pm25",
+      "12234788": "relativehumidity",
+      "393": "so2",
+      "12234789": "so2",
+      "12234790": "temperature",
+      "14340714": "wind_direction",
+      "14340715": "wind_speed"
+    }
+  },
+  {
+    "uid": 50,
+    "station_name": "Punjabi Bagh, Delhi - DPCC",
+    "latitude": 28.674,
+    "longitude": 77.131,
+    "sensorMap": {
+      "12234791": "co",
+      "398": "co",
+      "12234792": "no",
+      "12234793": "no2",
+      "400": "no2",
+      "14340716": "nox",
+      "71": "o3",
+      "12234794": "o3",
+      "395": "pm10",
+      "12234795": "pm10",
+      "396": "pm25",
+      "12234796": "pm25",
+      "12234797": "relativehumidity",
+      "397": "so2",
+      "12234798": "so2",
+      "12234799": "temperature",
+      "14340717": "wind_direction",
+      "14340718": "wind_speed"
+    }
+  },
+  {
+    "uid": 103,
+    "station_name": "Income Tax Office, Delhi - CPCB",
+    "latitude": 28.6235,
+    "longitude": 77.2494,
+    "sensorMap": {
+      "169": "co",
+      "13863": "no2",
+      "168": "o3",
+      "13862": "pm10",
+      "13861": "pm25"
+    }
+  },
+  {
+    "uid": 235,
+    "station_name": "Anand Vihar, New Delhi - DPCC",
+    "latitude": 28.6468,
+    "longitude": 77.316,
+    "sensorMap": {
+      "12235605": "co",
+      "385": "co",
+      "12235606": "no",
+      "12235607": "no2",
+      "382": "no2",
+      "14340864": "nox",
+      "380": "o3",
+      "12235608": "o3",
+      "12235609": "pm10",
+      "381": "pm10",
+      "384": "pm25",
+      "12235610": "pm25",
+      "12235611": "relativehumidity",
+      "12235612": "so2",
+      "383": "so2",
+      "12235613": "temperature",
+      "14340865": "wind_direction",
+      "14340866": "wind_speed"
+    }
+  },
+  {
+    "uid": 236,
+    "station_name": "Mandir Marg, Delhi - DPCC",
+    "latitude": 28.6341,
+    "longitude": 77.2005,
+    "sensorMap": {
+      "386": "co",
+      "389": "no2",
+      "390": "o3",
+      "391": "pm10",
+      "388": "pm25",
+      "387": "so2"
+    }
+  },
+  {
+    "uid": 301,
+    "station_name": "Vikas Sadan, Gurugram - HSPCB",
+    "latitude": 28.4501,
+    "longitude": 77.0263,
+    "sensorMap": {
+      "14258983": "co",
+      "5396": "co",
+      "14258984": "no",
+      "5409": "no2",
+      "14258985": "no2",
+      "14341789": "nox",
+      "14258986": "o3",
+      "5407": "o3",
+      "14258987": "pm10",
+      "506": "pm10",
+      "1166": "pm25",
+      "14258988": "pm25",
+      "14258989": "relativehumidity",
+      "5405": "so2",
+      "14258990": "so2",
+      "14258991": "temperature",
+      "14341790": "wind_direction",
+      "14341791": "wind_speed"
+    }
+  },
+  {
+    "uid": 431,
+    "station_name": "IHBAS, Delhi - CPCB",
+    "latitude": 28.6821,
+    "longitude": 77.305,
+    "sensorMap": {
+      "5361": "co",
+      "747": "no2",
+      "13868": "pm25",
+      "13867": "so2"
+    }
+  },
+  {
+    "uid": 2503,
+    "station_name": "Shadipur, Delhi - CPCB",
+    "latitude": 28.6517,
+    "longitude": 77.1581,
+    "sensorMap": {
+      "4851": "co",
+      "4852": "no2",
+      "4853": "o3",
+      "13860": "pm25",
+      "13859": "so2"
+    }
+  },
+  {
+    "uid": 2587,
+    "station_name": "Sector16A, Faridabad - HSPCB",
+    "latitude": 28.4101,
+    "longitude": 77.3138,
+    "sensorMap": {
+      "5347": "co",
+      "5341": "no2",
+      "5344": "o3",
+      "40563": "pm10",
+      "13900": "pm25",
+      "13901": "so2"
+    }
+  },
+  {
+    "uid": 2597,
+    "station_name": "US Diplomatic Post: New Delhi",
+    "latitude": 28.5981,
+    "longitude": 77.1891,
+    "sensorMap": {
+      "5398": "pm25"
+    }
+  },
+  {
+    "uid": 5404,
+    "station_name": "Pusa, Delhi - IMD",
+    "latitude": 28.6396,
+    "longitude": 77.1463,
+    "sensorMap": {
+      "14086": "co",
+      "12234697": "co",
+      "12234698": "no",
+      "12234699": "no2",
+      "14084": "no2",
+      "14340700": "nox",
+      "12234700": "o3",
+      "14085": "pm10",
+      "12234701": "pm10",
+      "14087": "pm25",
+      "12234702": "pm25"
+    }
+  },
+  {
+    "uid": 5509,
+    "station_name": "Anand Vihar, Delhi - DPCC",
+    "latitude": 28.6476,
+    "longitude": 77.3158,
+    "sensorMap": {
+      "14519": "co",
+      "14523": "no2",
+      "14524": "o3",
+      "14522": "pm10",
+      "14521": "pm25",
+      "14520": "so2"
+    }
+  },
+  {
+    "uid": 5540,
+    "station_name": "Punjabi Bagh, Delhi - DPCC",
+    "latitude": 28.6671,
+    "longitude": 77.1301,
+    "sensorMap": {
+      "14616": "co",
+      "14613": "no2",
+      "14614": "o3",
+      "14612": "pm10",
+      "14617": "pm25",
+      "14615": "so2"
+    }
+  },
+  {
+    "uid": 5541,
+    "station_name": "Burari Crossing, New Delhi - IMD",
+    "latitude": 28.7257,
+    "longitude": 77.2012,
+    "sensorMap": {
+      "12234679": "co",
+      "14958": "co",
+      "12234680": "no",
+      "12234681": "no2",
+      "14936": "no2",
+      "14340697": "nox",
+      "14931": "o3",
+      "12234682": "o3",
+      "12234683": "pm10",
+      "14620": "pm10",
+      "14912": "pm25",
+      "12234684": "pm25"
+    }
+  },
+  {
+    "uid": 5570,
+    "station_name": "Aya Nagar, New Delhi - IMD",
+    "latitude": 28.4743,
+    "longitude": 77.1316,
+    "sensorMap": {
+      "15010": "co",
+      "12234703": "co",
+      "12234704": "no",
+      "12234705": "no2",
+      "15019": "no2",
+      "14340701": "nox",
+      "15021": "o3",
+      "12234706": "o3",
+      "12234707": "pm10",
+      "15027": "pm10",
+      "12234708": "pm25",
+      "14717": "pm25"
+    }
+  },
+  {
+    "uid": 5581,
+    "station_name": "Pusa, New Delhi - IMD",
+    "latitude": 28.6103,
+    "longitude": 77.0997,
+    "sensorMap": {
+      "15266": "co",
+      "14800": "no2",
+      "14752": "o3",
+      "14851": "pm10",
+      "14853": "pm25"
+    }
+  },
+  {
+    "uid": 5586,
+    "station_name": "Sirifort, Delhi - CPCB",
+    "latitude": 28.5504,
+    "longitude": 77.2159,
+    "sensorMap": {
+      "12234764": "co",
+      "12234765": "no",
+      "12234766": "no2",
+      "14340707": "nox",
+      "12234767": "o3",
+      "12234768": "pm10",
+      "12234769": "pm25",
+      "12234770": "relativehumidity",
+      "12234771": "so2",
+      "12234772": "temperature",
+      "14340708": "wind_direction",
+      "14340709": "wind_speed"
+    }
+  },
+  {
+    "uid": 5598,
+    "station_name": "Sector - 125, Noida, UP - UPPCB",
+    "latitude": 28.5448,
+    "longitude": 77.3231,
+    "sensorMap": {
+      "12235182": "co",
+      "12235183": "no",
+      "12235184": "no2",
+      "14340784": "nox",
+      "12235185": "o3",
+      "12235186": "pm10",
+      "12235187": "pm25",
+      "12235188": "relativehumidity",
+      "12235189": "so2",
+      "12235190": "temperature",
+      "14340785": "wind_direction",
+      "14340786": "wind_speed"
+    }
+  },
+  {
+    "uid": 5610,
+    "station_name": "North Campus, DU, Delhi - IMD",
+    "latitude": 28.6574,
+    "longitude": 77.1585,
+    "sensorMap": {
+      "12234685": "co",
+      "14909": "co",
+      "12234686": "no",
+      "14902": "no2",
+      "12234687": "no2",
+      "14340698": "nox",
+      "14889": "o3",
+      "2007703": "o3",
+      "12234688": "o3",
+      "12234689": "pm10",
+      "14886": "pm10",
+      "14860": "pm25",
+      "12234690": "pm25"
+    }
+  },
+  {
+    "uid": 5613,
+    "station_name": "ITO, New Delhi - CPCB",
+    "latitude": 28.6286,
+    "longitude": 77.2411,
+    "sensorMap": {
+      "17782": "co",
+      "12234748": "co",
+      "12234749": "no",
+      "14866": "no2",
+      "12234750": "no2",
+      "14341687": "nox",
+      "17785": "o3",
+      "12234751": "o3",
+      "12234752": "pm10",
+      "14869": "pm10",
+      "12234753": "pm25",
+      "14878": "pm25",
+      "17781": "so2",
+      "12234754": "so2"
+    }
+  },
+  {
+    "uid": 3410004,
+    "station_name": "Amity University, Panchgaon - IITM",
+    "latitude": 28.3153,
+    "longitude": 76.9143,
+    "sensorMap": {
+      "12238720": "co",
+      "12238721": "no",
+      "12238722": "no2",
+      "14342284": "nox",
+      "12238723": "o3",
+      "12238724": "pm10",
+      "12238725": "pm25",
+      "12238726": "relativehumidity",
+      "12238727": "so2",
+      "12238728": "temperature",
+      "14342285": "wind_direction",
+      "14342286": "wind_speed"
+    }
+  },
+  {
+    "uid": 4663956,
+    "station_name": "Santushti Apartments, Vasant Kunj",
+    "latitude": 28.5266,
+    "longitude": 77.1493,
+    "sensorMap": {
+      "13273789": "pm1",
+      "13273790": "pm25",
+      "13273791": "relativehumidity",
+      "13273792": "temperature",
+      "13273793": "um003"
+    }
+  },
+  {
+    "uid": 6953,
+    "station_name": "Sector-2 IMT, Manesar - HSPCB",
+    "latitude": 28.3607,
+    "longitude": 76.9361,
+    "sensorMap": {
+      "14250040": "co",
+      "20014": "co",
+      "14250041": "no",
+      "14250042": "no2",
+      "20012": "no2",
+      "14341884": "nox",
+      "20011": "o3",
+      "14250043": "o3",
+      "14250044": "pm10",
+      "20009": "pm10",
+      "20006": "pm25",
+      "14250045": "pm25",
+      "14250046": "relativehumidity",
+      "20003": "so2",
+      "14250047": "so2",
+      "14250048": "temperature",
+      "14341885": "wind_direction",
+      "14341886": "wind_speed"
+    }
+  },
+  {
+    "uid": 6957,
+    "station_name": "Jawaharlal Nehru Stadium, Delhi - DPCC",
+    "latitude": 28.5803,
+    "longitude": 77.2338,
+    "sensorMap": {
+      "12235033": "co",
+      "20015": "co",
+      "12235034": "no",
+      "20017": "no2",
+      "12235035": "no2",
+      "14340749": "nox",
+      "20018": "o3",
+      "12235036": "o3",
+      "20019": "pm10",
+      "12235037": "pm10",
+      "12235038": "pm25",
+      "20020": "pm25",
+      "12235039": "relativehumidity",
+      "12235040": "so2",
+      "20021": "so2",
+      "12235041": "temperature",
+      "14340750": "wind_direction",
+      "14340751": "wind_speed"
+    }
+  },
+  {
+    "uid": 6960,
+    "station_name": "Patparganj, Delhi - DPCC",
+    "latitude": 28.6237,
+    "longitude": 77.2872,
+    "sensorMap": {
+      "12235096": "co",
+      "12235097": "no",
+      "12235098": "no2",
+      "20037": "no2",
+      "14340769": "nox",
+      "12235099": "o3",
+      "20039": "o3",
+      "20040": "pm10",
+      "12235100": "pm10",
+      "20049": "pm25",
+      "12235101": "pm25",
+      "12235102": "relativehumidity",
+      "20055": "so2",
+      "12235103": "so2",
+      "12235104": "temperature",
+      "14340770": "wind_direction",
+      "14340771": "wind_speed"
+    }
+  },
+  {
+    "uid": 6972,
+    "station_name": "Nathu Colony, Ballabgarh - HSPCB",
+    "latitude": 28.3419,
+    "longitude": 77.3197,
+    "sensorMap": {
+      "14283595": "co",
+      "20148": "co",
+      "14283596": "no",
+      "20145": "no2",
+      "14283597": "no2",
+      "14341920": "nox",
+      "14283598": "o3",
+      "20127": "o3",
+      "14283599": "pm10",
+      "20126": "pm10",
+      "20123": "pm25",
+      "14283600": "pm25",
+      "14283601": "relativehumidity",
+      "20118": "so2",
+      "14283602": "so2",
+      "14283603": "temperature",
+      "14341921": "wind_direction",
+      "14341922": "wind_speed"
+    }
+  },
+  {
+    "uid": 6978,
+    "station_name": "Knowledge Park - III, Greater Noida - UPPCB",
+    "latitude": 28.4727,
+    "longitude": 77.482,
+    "sensorMap": {
+      "12235191": "co",
+      "20181": "co",
+      "12235192": "no",
+      "20177": "no2",
+      "12235193": "no2",
+      "14340787": "nox",
+      "20180": "o3",
+      "12235194": "o3",
+      "12235195": "pm10",
+      "20191": "pm10",
+      "20209": "pm25",
+      "12235196": "pm25",
+      "12235197": "relativehumidity",
+      "12235198": "so2",
+      "20227": "so2",
+      "12235199": "temperature",
+      "14340788": "wind_direction",
+      "14340789": "wind_speed"
+    }
+  },
+  {
+    "uid": 6980,
+    "station_name": "Sector-1, Noida - UPPCB",
+    "latitude": 28.5892,
+    "longitude": 77.322,
+    "sensorMap": {
+      "12235946": "co",
+      "20186": "co",
+      "12235947": "no",
+      "12235948": "no2",
+      "20187": "no2",
+      "14340947": "nox",
+      "12235949": "o3",
+      "20189": "o3",
+      "12235950": "pm10",
+      "20194": "pm10",
+      "20206": "pm25",
+      "12235951": "pm25",
+      "12235952": "relativehumidity",
+      "12235953": "so2",
+      "20207": "so2",
+      "12235954": "temperature",
+      "14340948": "wind_direction",
+      "14340949": "wind_speed"
+    }
+  },
+  {
+    "uid": 6986,
+    "station_name": "Knowledge Park - V, Greater Noida - UPPCB",
+    "latitude": 28.5571,
+    "longitude": 77.4537,
+    "sensorMap": {
+      "20230": "co",
+      "12235930": "co",
+      "12235931": "no",
+      "12235932": "no2",
+      "20232": "no2",
+      "14340941": "nox",
+      "12235933": "o3",
+      "20237": "o3",
+      "12235934": "pm10",
+      "20241": "pm10",
+      "20242": "pm25",
+      "12235935": "pm25",
+      "12235936": "relativehumidity",
+      "20244": "so2",
+      "12235937": "so2",
+      "12235938": "temperature",
+      "14340942": "wind_direction",
+      "14340943": "wind_speed"
+    }
+  },
+  {
+    "uid": 6988,
+    "station_name": "Sector-116, Noida - UPPCB",
+    "latitude": 28.5692,
+    "longitude": 77.3938,
+    "sensorMap": {
+      "12235939": "co",
+      "12241382": "no",
+      "12241383": "no2",
+      "14340944": "nox",
+      "12235940": "o3",
+      "12235941": "pm10",
+      "12235942": "pm25",
+      "12235943": "relativehumidity",
+      "12235944": "so2",
+      "12235945": "temperature",
+      "14340945": "wind_direction",
+      "14340946": "wind_speed"
+    }
+  },
+  {
+    "uid": 7005,
+    "station_name": "Loni, Ghaziabad - UPPCB",
+    "latitude": 28.7573,
+    "longitude": 77.2788,
+    "sensorMap": {
+      "12235783": "co",
+      "20295": "co",
+      "12235784": "no",
+      "12235785": "no2",
+      "20294": "no2",
+      "14340910": "nox",
+      "12264381": "o3",
+      "20292": "o3",
+      "20293": "pm10",
+      "12235786": "pm10",
+      "12235787": "pm25",
+      "20290": "pm25",
+      "12235788": "relativehumidity",
+      "20291": "so2",
+      "12235789": "so2",
+      "12235790": "temperature",
+      "14340911": "wind_direction",
+      "14340912": "wind_speed"
+    }
+  },
+  {
+    "uid": 7044,
+    "station_name": "R K Puram, Delhi - DPCC",
+    "latitude": 28.5633,
+    "longitude": 77.1869,
+    "sensorMap": {
+      "20410": "co",
+      "20409": "no2",
+      "20406": "o3",
+      "20407": "pm10",
+      "20411": "pm25",
+      "20408": "so2"
+    }
+  },
+  {
+    "uid": 7434,
+    "station_name": "East Arjun Nagar, Delhi - CPCB",
+    "latitude": 28.6556,
+    "longitude": 77.2859,
+    "sensorMap": {
+      "21624": "no2",
+      "21625": "o3",
+      "21623": "so2"
+    }
+  },
+  {
+    "uid": 8092,
+    "station_name": "East Arjun Nagar, Delhi - CPCB",
+    "latitude": 28.6559,
+    "longitude": 77.2949,
+    "sensorMap": {
+      "23669": "no2",
+      "23465": "o3",
+      "34750": "so2"
+    }
+  },
+  {
+    "uid": 8118,
+    "station_name": "New Delhi",
+    "latitude": 28.6358,
+    "longitude": 77.2244,
+    "sensorMap": {
+      "23534": "pm25"
+    }
+  },
+  {
+    "uid": 10485,
+    "station_name": "Narela, Delhi - DPCC",
+    "latitude": 28.8228,
+    "longitude": 77.102,
+    "sensorMap": {
+      "34776": "co",
+      "12235051": "co",
+      "12235052": "no",
+      "34760": "no2",
+      "12235053": "no2",
+      "14340755": "nox",
+      "34792": "o3",
+      "12235054": "o3",
+      "34791": "pm10",
+      "12235055": "pm10",
+      "34790": "pm25",
+      "12235056": "pm25",
+      "12235057": "relativehumidity",
+      "12235058": "so2",
+      "34789": "so2",
+      "12235059": "temperature",
+      "14340756": "wind_direction",
+      "14340757": "wind_speed"
+    }
+  },
+  {
+    "uid": 10486,
+    "station_name": "Mundka, Delhi - DPCC",
+    "latitude": 28.6847,
+    "longitude": 77.0766,
+    "sensorMap": {
+      "34763": "co",
+      "12235298": "co",
+      "12235299": "no",
+      "12235300": "no2",
+      "34764": "no2",
+      "14340811": "nox",
+      "12235301": "o3",
+      "34765": "o3",
+      "12235302": "pm10",
+      "34766": "pm10",
+      "12235303": "pm25",
+      "34767": "pm25",
+      "12235304": "relativehumidity",
+      "34769": "so2",
+      "12235305": "so2",
+      "12235306": "temperature",
+      "14340812": "wind_direction",
+      "14340813": "wind_speed"
+    }
+  },
+  {
+    "uid": 10487,
+    "station_name": "Anand Vihar, Delhi - DPCC",
+    "latitude": 28.6468,
+    "longitude": 77.316,
+    "sensorMap": {
+      "34787": "co",
+      "34784": "no2",
+      "34783": "o3",
+      "34780": "pm10",
+      "34771": "pm25",
+      "34770": "so2"
+    }
+  },
+  {
+    "uid": 10488,
+    "station_name": "Najafgarh, Delhi - DPCC",
+    "latitude": 28.5702,
+    "longitude": 76.9338,
+    "sensorMap": {
+      "12235060": "co",
+      "34779": "co",
+      "12235061": "no",
+      "34778": "no2",
+      "12235062": "no2",
+      "14340758": "nox",
+      "34777": "o3",
+      "12235063": "o3",
+      "12235064": "pm10",
+      "34775": "pm10",
+      "34774": "pm25",
+      "12235065": "pm25",
+      "12235066": "relativehumidity",
+      "12235067": "so2",
+      "34773": "so2",
+      "12235068": "temperature",
+      "14340759": "wind_direction",
+      "14340760": "wind_speed"
+    }
+  },
+  {
+    "uid": 10489,
+    "station_name": "ITO, Delhi - CPCB",
+    "latitude": 28.6286,
+    "longitude": 77.2411,
+    "sensorMap": {
+      "34823": "co",
+      "34821": "no2",
+      "34816": "o3",
+      "34793": "pm10",
+      "35016": "pm25",
+      "35015": "so2"
+    }
+  },
+  {
+    "uid": 10820,
+    "station_name": "Sector 30, Faridabad - HSPCB",
+    "latitude": 28.4417,
+    "longitude": 77.3217,
+    "sensorMap": {
+      "12236231": "co",
+      "12236232": "no",
+      "12236233": "no2",
+      "14342029": "nox",
+      "12236234": "o3",
+      "12236235": "pm10",
+      "12236236": "pm25",
+      "12236237": "relativehumidity",
+      "12236238": "so2",
+      "12236239": "temperature",
+      "14342030": "wind_direction",
+      "14342031": "wind_speed"
+    }
+  },
+  {
+    "uid": 10825,
+    "station_name": "Sector-51, Gurugram - HSPCB",
+    "latitude": 28.4227,
+    "longitude": 77.0667,
+    "sensorMap": {
+      "36177": "co",
+      "12236254": "co",
+      "12236255": "no",
+      "36178": "no2",
+      "12236256": "no2",
+      "14342035": "nox",
+      "12236257": "o3",
+      "36179": "o3",
+      "36180": "pm10",
+      "12236258": "pm10",
+      "12236259": "pm25",
+      "36181": "pm25",
+      "12236260": "relativehumidity",
+      "36182": "so2",
+      "12236261": "so2",
+      "12236262": "temperature",
+      "14342036": "wind_direction",
+      "14342037": "wind_speed"
+    }
+  },
+  {
+    "uid": 10831,
+    "station_name": "Rohini, Delhi - DPCC",
+    "latitude": 28.7325,
+    "longitude": 77.1199,
+    "sensorMap": {
+      "36208": "co",
+      "12235087": "co",
+      "12235088": "no",
+      "36209": "no2",
+      "12235089": "no2",
+      "14340766": "nox",
+      "12235090": "o3",
+      "36213": "o3",
+      "36382": "pm10",
+      "12235091": "pm10",
+      "36399": "pm25",
+      "12235092": "pm25",
+      "12235093": "relativehumidity",
+      "12235094": "so2",
+      "36449": "so2",
+      "12235095": "temperature",
+      "14340767": "wind_direction",
+      "14340768": "wind_speed"
+    }
+  },
+  {
+    "uid": 8235,
+    "station_name": "Jahangirpuri, Delhi - DPCC",
+    "latitude": 28.7328,
+    "longitude": 77.1706,
+    "sensorMap": {
+      "12235024": "co",
+      "23993": "co",
+      "12235025": "no",
+      "12235026": "no2",
+      "23994": "no2",
+      "14340746": "nox",
+      "12235027": "o3",
+      "23995": "o3",
+      "12235028": "pm10",
+      "23996": "pm10",
+      "12235029": "pm25",
+      "23997": "pm25",
+      "12235030": "relativehumidity",
+      "23998": "so2",
+      "12235031": "so2",
+      "12235032": "temperature",
+      "14340747": "wind_direction",
+      "14340748": "wind_speed"
+    }
+  },
+  {
+    "uid": 8239,
+    "station_name": "Okhla Phase-2, Delhi - DPCC",
+    "latitude": 28.5308,
+    "longitude": 77.2713,
+    "sensorMap": {
+      "12235069": "co",
+      "24010": "co",
+      "12235070": "no",
+      "24008": "no2",
+      "12235071": "no2",
+      "14340761": "nox",
+      "24012": "o3",
+      "12235072": "o3",
+      "24011": "pm10",
+      "12235073": "pm10",
+      "12235074": "pm25",
+      "24007": "pm25",
+      "12235075": "relativehumidity",
+      "12235076": "so2",
+      "24009": "so2",
+      "12235077": "temperature",
+      "14340762": "wind_direction",
+      "14340763": "wind_speed"
+    }
+  },
+  {
+    "uid": 8365,
+    "station_name": "Nehru Nagar, Delhi - DPCC",
+    "latitude": 28.5679,
+    "longitude": 77.2505,
+    "sensorMap": {
+      "12235078": "co",
+      "34799": "co",
+      "12235079": "no",
+      "12235080": "no2",
+      "24303": "no2",
+      "14340764": "nox",
+      "12235081": "o3",
+      "35017": "o3",
+      "35012": "pm10",
+      "12235082": "pm10",
+      "12235083": "pm25",
+      "35010": "pm25",
+      "12235084": "relativehumidity",
+      "35009": "so2",
+      "12235085": "so2",
+      "12235086": "temperature",
+      "14341775": "wind_direction",
+      "14340765": "wind_speed"
+    }
+  },
+  {
+    "uid": 8472,
+    "station_name": "Bawana, Delhi - DPCC",
+    "latitude": 28.7762,
+    "longitude": 77.0511,
+    "sensorMap": {
+      "36395": "co",
+      "12235289": "co",
+      "12235290": "no",
+      "36394": "no2",
+      "12235291": "no2",
+      "14340808": "nox",
+      "12235292": "o3",
+      "36393": "o3",
+      "12235293": "pm10",
+      "24602": "pm10",
+      "12235294": "pm25",
+      "36391": "pm25",
+      "12235295": "relativehumidity",
+      "12235296": "so2",
+      "12235297": "temperature",
+      "14340809": "wind_direction",
+      "14340810": "wind_speed"
+    }
+  },
+  {
+    "uid": 8475,
+    "station_name": "Sonia Vihar, Delhi - DPCC",
+    "latitude": 28.7105,
+    "longitude": 77.2495,
+    "sensorMap": {
+      "24615": "co",
+      "12235105": "co",
+      "12235106": "no",
+      "35047": "no2",
+      "12235107": "no2",
+      "14340772": "nox",
+      "35048": "o3",
+      "12235108": "o3",
+      "12235109": "pm10",
+      "35049": "pm10",
+      "12235110": "pm25",
+      "35050": "pm25",
+      "12235111": "relativehumidity",
+      "35051": "so2",
+      "12235112": "so2",
+      "12235113": "temperature",
+      "14341776": "wind_direction",
+      "14340773": "wind_speed"
+    }
+  },
+  {
+    "uid": 8915,
+    "station_name": "Wazirpur, Delhi - DPCC",
+    "latitude": 28.6998,
+    "longitude": 77.1655,
+    "sensorMap": {
+      "34728": "co",
+      "12235119": "co",
+      "12235120": "no",
+      "34732": "no2",
+      "12235121": "no2",
+      "14340775": "nox",
+      "12235122": "o3",
+      "34730": "o3",
+      "26026": "pm10",
+      "12235123": "pm10",
+      "12235124": "pm25",
+      "34731": "pm25",
+      "12235125": "relativehumidity",
+      "34729": "so2",
+      "12235126": "so2",
+      "12235127": "temperature",
+      "14340776": "wind_direction",
+      "14340777": "wind_speed"
+    }
+  },
+  {
+    "uid": 8917,
+    "station_name": "Ashok Vihar, Delhi - DPCC",
+    "latitude": 28.6954,
+    "longitude": 77.1817,
+    "sensorMap": {
+      "34762": "co",
+      "12234997": "co",
+      "12234998": "no",
+      "34768": "no2",
+      "12234999": "no2",
+      "14340737": "nox",
+      "34782": "o3",
+      "12235000": "o3",
+      "34785": "pm10",
+      "12235001": "pm10",
+      "12235002": "pm25",
+      "26032": "pm25",
+      "12235003": "relativehumidity",
+      "12235004": "so2",
+      "34786": "so2",
+      "12235005": "temperature",
+      "14340738": "wind_direction",
+      "14340739": "wind_speed"
+    }
+  },
+  {
+    "uid": 10484,
+    "station_name": "Sri Aurobindo Marg, Delhi - DPCC",
+    "latitude": 28.5313,
+    "longitude": 77.1902,
+    "sensorMap": {
+      "12235307": "co",
+      "34761": "co",
+      "12235308": "no",
+      "12235309": "no2",
+      "34758": "no2",
+      "14340814": "nox",
+      "34757": "o3",
+      "12235310": "o3",
+      "34781": "pm10",
+      "12235311": "pm10",
+      "34772": "pm25",
+      "12235312": "pm25",
+      "12235313": "relativehumidity",
+      "12235314": "so2",
+      "34759": "so2",
+      "12235315": "temperature",
+      "14340815": "wind_direction",
+      "14340816": "wind_speed"
+    }
+  }
+]
