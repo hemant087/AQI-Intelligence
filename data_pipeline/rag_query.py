@@ -36,7 +36,8 @@ load_dotenv()
 SUPABASE_URL     = os.getenv("SUPABASE_URL", "")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "")
 OLLAMA_BASE_URL  = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
-OLLAMA_MODEL     = os.getenv("OLLAMA_MODEL", "qwen2:1.5b")   # swap to llama3.1:8b when RAM freed
+# OLLAMA_MODEL     = os.getenv("OLLAMA_MODEL", "qwen2:1.5b")   # swap to llama3.1:8b when RAM freed
+OLLAMA_MODEL     = os.getenv("OLLAMA_MODEL", "llama3.1:8b")   # swap to llama3.1:8b when RAM freed
 
 SUPABASE_HEADERS = {
     "apikey": SUPABASE_ANON_KEY,
@@ -146,6 +147,30 @@ def blh_label(blh: float | None) -> str:
     return f"{blh:.0f}m — High ✅ (good pollutant dispersion)"
 
 
+def fetch_traffic_context(limit: int = 10) -> list[dict] | None:
+    """Fetch latest traffic readings from Supabase, sorted by worst congestion first."""
+    url = f"{SUPABASE_URL}/rest/v1/traffic_readings"
+    params = {
+        "select":         "corridor_name,current_speed,free_flow_speed,congestion_pct,congestion_level,road_closure,recorded_at,vehicles_per_hour",
+        "order":          "recorded_at.desc",
+        "limit":          30,   # get recent batch, then sort in Python
+    }
+    try:
+        resp = requests.get(url, headers=SUPABASE_HEADERS, params=params, timeout=15)
+        resp.raise_for_status()
+        rows = resp.json()
+        # Deduplicate: keep most recent per corridor, sort by congestion
+        seen = {}
+        for r in rows:
+            n = r["corridor_name"]
+            if n not in seen:
+                seen[n] = r
+        sorted_rows = sorted(seen.values(), key=lambda x: x.get("congestion_pct") or 0, reverse=True)
+        return sorted_rows[:limit]
+    except Exception:
+        return None
+
+
 # ── Context Assembler ─────────────────────────────────────────────────────────
 
 def build_context(
@@ -236,7 +261,38 @@ def build_context(
     except Exception as e:
         lines.append(f"[Readings unavailable: {e}]\n")
 
+    # ── Traffic ───────────────────────────────────────────────────
+    try:
+        traffic = fetch_traffic_context(limit=10)
+        if traffic:
+            heavy   = [t for t in traffic if (t.get("congestion_pct") or 0) >= 50]
+            free    = [t for t in traffic if (t.get("congestion_pct") or 0) <= 15]
+            lines.append("=== DELHI NCR TRAFFIC CONGESTION (Real-time) ===")
+            lines.append(f"📊 {len(heavy)} corridors heavily congested | {len(free)} corridors free-flowing")
+            lines.append("Note: High congestion → elevated NO2, CO, and PM2.5 from vehicle exhaust")
+            lines.append("")
+            lines.append("Top congested corridors (pollution risk zones):")
+            for t in traffic[:6]:
+                closure = " [ROAD CLOSED]" if t.get("road_closure") else ""
+                speed   = f"{t['current_speed']:.0f} km/h" if t.get("current_speed") else "N/A"
+                pct     = t.get("congestion_pct") or 0.0
+                pcu     = t.get("vehicles_per_hour") or 0
+                lines.append(
+                    f"  • {t['corridor_name']}{closure}\n"
+                    f"    {t.get('congestion_level','?')} congestion ({pct:.0f}% slower) | Speed: {speed} | Est. Vol: ~{pcu} PCU/hr"
+                )
+            if free:
+                lines.append("\nFree-flowing corridors:")
+                for t in free[:3]:
+                    lines.append(f"  ✅ {t['corridor_name']} ({t.get('congestion_pct',0):.0f}% delay)")
+            lines.append("")
+        else:
+            lines.append("=== TRAFFIC ===\n[Run traffic_pipeline.py to populate traffic data]\n")
+    except Exception as e:
+        lines.append(f"[Traffic unavailable: {e}]\n")
+
     # ── News ──────────────────────────────────────────────────
+
     try:
         news = fetch_news(limit=10)
         if news:
