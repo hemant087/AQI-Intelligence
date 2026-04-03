@@ -227,7 +227,7 @@ We are building a **Retrieval-Augmented Generation (RAG)** system that synthesiz
 | Fine-tune existing LLM | 🟡 Future | Useful for domain vocabulary, not for live data |
 | **RAG (Retrieval-Augmented)** | ✅ **Now** | Live data injected at query time; always fresh; cheap |
 
-#### The 13+ Data Sources
+<!-- #### The 13+ Data Sources
 
 | # | Source | Type | Frequency |
 |---|---|---|---|
@@ -244,7 +244,7 @@ We are building a **Retrieval-Augmented Generation (RAG)** system that synthesiz
 | 11 | Social Media Sentiment | Unstructured | Real-time |
 | 12 | Urban Infrastructure (OSM) | GeoJSON | Static |
 | 13 | Traffic Density | Structured | Real-time |
-| 14 | Environmental News | Unstructured | Hourly ✅ |
+| 14 | Environmental News | Unstructured | Hourly ✅ | -->
 
 #### Full RAG System Architecture
 
