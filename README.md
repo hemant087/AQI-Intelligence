@@ -250,7 +250,7 @@ We are building a **Retrieval-Augmented Generation (RAG)** system that synthesiz
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     DATA INGESTION LAYER                     │
+│                     DATA INGESTION LAYER                    │
 ├──────────────┬──────────────┬──────────────┬────────────────┤
 │  Real-time   │   Hourly     │    Daily     │    Static      │
 │  Collectors  │  Collectors  │  Collectors  │   Loaders      │
@@ -262,11 +262,11 @@ We are building a **Retrieval-Augmented Generation (RAG)** system that synthesiz
        │              │              │               │
        ▼              ▼              ▼               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                   PROCESSING LAYER                           │
+│                   PROCESSING LAYER                          │
 │                                                             │
-│  ┌─────────────────┐    ┌──────────────────────────────┐   │
-│  │ Structured Data  │    │    Unstructured Data          │   │
-│  │ Processor        │    │    Processor                  │   │
+│  ┌─────────────────┐    ┌───────────────────────────────┐   │
+│  │ Structured Data │    │    Unstructured Data          │   │
+│  │ Processor       │    │    Processor                  │   │
 │  │                 │    │                               │   │
 │  │ • Normalize AQI │    │ • Chunk news articles (512t)  │   │
 │  │ • Geo-tag data  │    │ • Extract survey insights     │   │
@@ -275,23 +275,23 @@ We are building a **Retrieval-Augmented Generation (RAG)** system that synthesiz
 └───────────┼──────────────────────────┼──────────────────────┘
             │                          │
             ▼                          ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    STORAGE LAYER (Supabase)                  │
-│                                                             │
+┌────────────────────────────────────────────────────────────┐
+│                    STORAGE LAYER (Supabase)                │
+│                                                            │
 │  ┌────────────────┐    ┌───────────────────────────────┐   │
-│  │  PostgreSQL     │    │   pgvector (Vector Store)     │   │
-│  │  (structured)   │    │                               │   │
+│  │  PostgreSQL    │    │   pgvector (Vector Store)     │   │
+│  │  (structured)  │    │                               │   │
 │  │                │    │  • News embeddings            │   │
 │  │  • AQI readings│    │  • Survey embeddings          │   │
 │  │  • Weather logs│    │  • Hospital report embeddings │   │
 │  │  • Station meta│    │  • Social sentiment vectors   │   │
 │  │  • User data   │    │  • Infrastructure chunks      │   │
 │  └────────────────┘    └───────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
+└────────────────────────────────────────────────────────────┘
             │                          │
             ▼                          ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    RAG QUERY ENGINE                          │
+│                    RAG QUERY ENGINE                         │
 │                                                             │
 │  User Query + Location + Profile                            │
 │       │                                                     │
@@ -314,10 +314,10 @@ We are building a **Retrieval-Augmented Generation (RAG)** system that synthesiz
 │                                                             │
 │  Gemini 1.5 Flash / Groq Llama 3.1                         │
 │                                                             │
-│  System: "You are AtmoPulse AI, an air quality health      │
-│  advisor for Delhi NCR. Use ONLY the provided context..."  │
+│  System: "You are AtmoPulse AI, an air quality health       │
+│  advisor for Delhi NCR. Use ONLY the provided context..."   │
 │                                                             │
-│  Context: [AQI][Weather][News][Hospital][Surveys][Infra]   │
+│  Context: [AQI][Weather][News][Hospital][Surveys][Infra]    │
 │                                                             │
 │  Output: Structured JSON guidance                           │
 └─────────────────────────────────────────────────────────────┘
@@ -326,7 +326,7 @@ We are building a **Retrieval-Augmented Generation (RAG)** system that synthesiz
 ┌─────────────────────────────────────────────────────────────┐
 │                   RESPONSE LAYER (Mobile App)               │
 │                                                             │
-│  • Health risk score (1–10)                                │
+│  • Health risk score (1–10)                                 │
 │  • Personalized activity guidance                           │
 │  • Nearest safe zone recommendation                         │
 │  • Trend prediction (next 6 hours)                          │
