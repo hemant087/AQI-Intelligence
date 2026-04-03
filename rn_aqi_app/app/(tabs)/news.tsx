@@ -19,6 +19,13 @@ export default function NewsScreen() {
 
   useEffect(() => {
     loadNews();
+    
+    // Auto-refresh every 10 minutes
+    const intervalId = setInterval(() => {
+      loadNews(true);
+    }, 10 * 60 * 1000);
+    
+    return () => clearInterval(intervalId);
   }, []);
 
   const onRefresh = () => {

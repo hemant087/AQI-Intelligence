@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, SectionList, SafeAreaView, ActivityIndicator, RefreshControl, Platform } from 'react-native';
+import { StyleSheet, View, Text, FlatList, SafeAreaView, ActivityIndicator, RefreshControl, Platform } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 // GovernmentAqiService (WAQI) commented out — using OpenAQ exclusively
 // import { governmentAqiService } from '../../src/services/GovernmentAqiService';
@@ -10,8 +10,26 @@ import { getAQILevel } from '../../src/models/AqiReading';
 // Delhi NCR bounding box
 const NCR_BBOX = { minLat: 28.3, minLon: 76.8, maxLat: 28.9, maxLon: 77.5 };
 
-// Normalise an OpenAQ location into a display-friendly shape
 function normaliseStation(loc: any, index: number) {
+  // Attempt to extract live readings from the sensors array
+  let extractedPm25 = null;
+  let extractedAqi = null;
+
+  if (loc.sensors && Array.isArray(loc.sensors)) {
+    const pm25Sensor = loc.sensors.find((s: any) => 
+      s.parameter?.name?.toLowerCase() === 'pm25' || 
+      s.parameter?.displayName?.toLowerCase() === 'pm2.5' ||
+      s.parameter === 'pm25'
+    );
+    const aqiSensor = loc.sensors.find((s: any) => 
+      s.parameter?.name?.toLowerCase() === 'aqi' || 
+      s.parameter === 'aqi'
+    );
+
+    extractedPm25 = pm25Sensor?.latest?.value ?? pm25Sensor?.value ?? null;
+    extractedAqi = aqiSensor?.latest?.value ?? aqiSensor?.value ?? null;
+  }
+
   return {
     uid: loc.id ?? index,
     name: loc.name || 'Unknown Station',
@@ -21,6 +39,8 @@ function normaliseStation(loc: any, index: number) {
     latitude: loc.coordinates?.latitude,
     longitude: loc.coordinates?.longitude,
     isMonitor: loc.isMonitor ?? false,
+    pm25: extractedPm25,
+    aqi: extractedAqi,
   };
 }
 
@@ -33,41 +53,42 @@ export default function StationsScreen() {
   const loadStations = async (isRefresh = false) => {
     if (!isRefresh) setLoading(true);
 
-    if (Platform.OS === 'web') {
-      // Web: OpenAQ blocks CORS from browsers — load all stations from Supabase cloud cache
-      // (pipeline stores all NCR stations under city='Delhi NCR')
-      setWebFallback(true);
+    try {
+      // Unified Data Pipeline for both Web and Native!
+      // The Supabase cloud cache holds real-time records updated by our background pipeline
+      // which properly computes AQI and solves the OpenAQ v3 CORS/measurement limitations.
       const all = await getAllStations(200);
+      
       if (all.length > 0) {
         setStations(all.map(s => ({
           uid:     s.uid,
           name:    s.stationName || s.name,
           city:    s.city,
           sensors: s.pollutants ? Object.values(s.pollutants).filter(v => v != null).length : 0,
-          owner:   'OpenAQ (cached)',
+          owner:   'OpenAQ Monitor',
+          time:    s.time,
           pm25:    s.pollutants?.pm25 ?? null,
           aqi:     s.aqi,
         })));
       }
-    } else {
-      // 📱 Native: fetch live from OpenAQ v3 bbox (no CORS restriction)
-      setWebFallback(false);
-      const raw = await openAqHistoricalService.fetchLocationsByBBox(
-        NCR_BBOX.minLat, NCR_BBOX.minLon, NCR_BBOX.maxLat, NCR_BBOX.maxLon
-      );
-      const mapped = raw.map(normaliseStation);
-      if (mapped.length > 0) setStations(mapped);
+      setWebFallback(false); // No longer a "fallback", it's the main data source 
+    } catch (e) {
+      console.error('Failed to load stations', e);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
-
-    // ── WAQI stations: commented out ─────────────────────────────────────
-    // const freshData = await governmentAqiService.fetchAllNcrStations();
-
-    setLoading(false);
-    setRefreshing(false);
   };
 
   useEffect(() => {
     loadStations();
+    
+    // Auto-refresh every 10 minutes
+    const intervalId = setInterval(() => {
+      loadStations(true);
+    }, 10 * 60 * 1000);
+    
+    return () => clearInterval(intervalId);
   }, []);
 
   const onRefresh = () => {
@@ -76,23 +97,12 @@ export default function StationsScreen() {
   };
 
 
-  const sections = [
-    {
-      title: 'Delhi Core',
-      data: stations.filter(s => s.name.toLowerCase().includes('delhi') || s.city === 'Delhi')
-    },
-    {
-      title: 'NCR Town Stations',
-      data: stations.filter(s => !s.name.toLowerCase().includes('delhi') && s.city !== 'Delhi')
-    }
-  ].filter(section => section.data.length > 0);
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Delhi NCR Monitors</Text>
         <Text style={styles.subtitle}>
-          {sections.map(s => `${s.data.length} in ${s.title}`).join(' • ')}
+          {stations.length} Active Stations
         </Text>
       </View>
 
@@ -111,37 +121,41 @@ export default function StationsScreen() {
           <ActivityIndicator size="large" color="#00B0FF" />
         </View>
       ) : (
-        <SectionList
-          sections={sections}
+        <FlatList
+          data={stations}
           keyExtractor={(item) => item.uid.toString()}
-          stickySectionHeadersEnabled={false}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
-          renderSectionHeader={({ section: { title } }: { section: { title: string } }) => (
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>{title}</Text>
-              <View style={styles.sectionLine} />
-            </View>
-          )}
           renderItem={({ item }: { item: any }) => {
-            const hasPm25 = item.pm25 != null && item.pm25 > 0;
-            const badgeValue = hasPm25 ? Math.round(item.pm25) : item.sensors;
-            const badgeLabel = hasPm25 ? 'PM2.5' : 'SNSR';
-            const badgeColor = hasPm25
-              ? (item.pm25 < 12 ? '#4CAF50' : item.pm25 < 35 ? '#FFC107' : item.pm25 < 55 ? '#FF9800' : '#F44336')
-              : '#00B0FF';
+            const aqiValue = item.aqi != null && item.aqi > 0 ? item.aqi : null;
+            const aqiLabel = 'AQI';
+            
+            // Default grey if no data, else evaluate color based on the computed US AQI
+            let badgeColor = '#9E9E9E'; 
+            if (aqiValue != null) {
+               badgeColor = getAQILevel(aqiValue).color || '#4CAF50';
+            }
+
+            const timeLabel = item.time ? new Date(item.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Unknown time';
+
             return (
               <View style={styles.stationCard}>
                 <View style={[styles.statusLine, { backgroundColor: badgeColor }]} />
                 <View style={styles.cardBody}>
                   <View style={styles.stationMain}>
                     <Text style={styles.stationName} numberOfLines={2}>{item.name}</Text>
-                    <Text style={styles.updateTime}>{item.city} • {item.owner}</Text>
+                    <Text style={styles.updateTime}>UID: {item.uid} • {timeLabel}</Text>
                   </View>
-                  <View style={[styles.aqiBadge, { backgroundColor: badgeColor }]}>
-                    <Text style={styles.aqiValue}>{badgeValue ?? '—'}</Text>
-                    <Text style={styles.aqiLabel}>{badgeLabel}</Text>
+                  <View style={{ flexDirection: 'row' }}>
+                    <View style={[styles.aqiBadge, { backgroundColor: badgeColor, marginRight: 8 }]}>
+                      <Text style={styles.aqiValue}>{aqiValue ?? '—'}</Text>
+                      <Text style={styles.aqiLabel}>{aqiLabel}</Text>
+                    </View>
+                    <View style={[styles.aqiBadge, { backgroundColor: '#00B0FF' }]}>
+                      <Text style={styles.aqiValue}>{item.sensors ?? 0}</Text>
+                      <Text style={styles.aqiLabel}>SNSR</Text>
+                    </View>
                   </View>
                 </View>
               </View>

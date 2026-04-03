@@ -20,9 +20,15 @@ export default function DashboardScreen() {
 
   useEffect(() => {
     if (latestReading?.deviceId && latestReading.sourceType === 'api') {
-      // For official stations, we use the deviceId as locationId
-      openAqHistoricalService.fetchHourlyTrends(latestReading.deviceId)
-        .then(setHistoricalData);
+      const fetchTrends = () => {
+        openAqHistoricalService.fetchHourlyTrends(latestReading.deviceId)
+          .then(setHistoricalData);
+      };
+      
+      fetchTrends();
+      // Auto-refresh trends every 10 minutes
+      const intervalId = setInterval(fetchTrends, 10 * 60 * 1000);
+      return () => clearInterval(intervalId);
     }
   }, [latestReading?.deviceId]);
 
@@ -73,6 +79,10 @@ export default function DashboardScreen() {
       }
     };
     initLocation();
+    
+    // Auto-refresh nearest station details every 10 minutes
+    const intervalId = setInterval(initLocation, 10 * 60 * 1000);
+    return () => clearInterval(intervalId);
   }, []);
 
   const getDistanceText = () => {

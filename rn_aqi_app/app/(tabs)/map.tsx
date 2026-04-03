@@ -1,21 +1,10 @@
 import React from 'react';
-import { StyleSheet, View, Text, Platform, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import { useAqiData } from '../../src/hooks/useAqiData';
 import { openAqHistoricalService } from '../../src/services/OpenAqHistoricalService';
 import { locationService } from '../../src/services/LocationService';
-
-// Conditional imports to avoid web crashes
-let MapView: any = View;
-let Marker: any = View;
-let PROVIDER_GOOGLE: any = 'google';
-
-if (Platform.OS !== 'web') {
-  const Maps = require('react-native-maps');
-  MapView = Maps.default;
-  Marker = Maps.Marker;
-  PROVIDER_GOOGLE = Maps.PROVIDER_GOOGLE;
-}
+import MapViewer from '../../src/components/MapViewer/MapViewer';
 
 export default function MapScreen() {
   const { aqiInfo } = useAqiData();
@@ -38,85 +27,50 @@ export default function MapScreen() {
       setLoading(false);
     };
     fetchStations();
+
+    // Auto-refresh every 10 minutes
+    const intervalId = setInterval(fetchStations, 10 * 60 * 1000);
+    return () => clearInterval(intervalId);
   }, []);
 
-  if (Platform.OS === 'web') {
-    return (
-      <View style={[styles.container, styles.webPlaceholder]}>
-        <Text style={styles.overlayTitle}>Map View (Native Only)</Text>
-        <Text style={styles.overlaySubtitle}>Use a physical device or emulator to see the live pollution map.</Text>
-      </View>
-    );
-  }
-
-  // Initial region centered on New Delhi
-  const initialRegion = {
-    latitude: 28.6139,
-    longitude: 77.2090,
-    latitudeDelta: 0.1,
-    longitudeDelta: 0.1,
-  };
-
-  // TEMPORARY FIX: Return a placeholder instead of MapView to prevent the 
-  // "API Key not found" IllegalStateException hard crash on Android.
   return (
-    <View style={[styles.container, styles.webPlaceholder]}>
-      <Text style={styles.overlayTitle}>Google Maps Disabled</Text>
-      <Text style={[styles.overlaySubtitle, { marginBottom: 20, textAlign: 'center' }]}>
-        Waiting for API Key. In the meantime, you can securely view the live open-source map!
-      </Text>
+    <View style={styles.container}>
+      {/* We can place our actual map here. The Platform logic is abstracted perfectly now! */}
+      <View style={{ height: 350, width: '100%' }}>
+        <MapViewer aqiInfo={aqiInfo} />
+      </View>
 
-      <TouchableOpacity 
-        style={styles.waqiButton}
-        onPress={() => WebBrowser.openBrowserAsync('https://waqi.info/#/c/28.613/77.209/10z')}
-      >
-        <Text style={styles.waqiButtonText}>Open Live WAQI Map</Text>
-      </TouchableOpacity>
-      
-      {/* Nearby Stations List */}
-      <View style={styles.stationsListContainer}>
-        <Text style={styles.listTitle}>Nearby OpenAQ Stations</Text>
-        {loading ? (
-          <Text style={styles.loadingText}>Searching for stations...</Text>
-        ) : nearbyStations.length > 0 ? (
-          nearbyStations.slice(0, 15).map((station, index) => (
-            <View key={index} style={styles.stationItem}>
-              <View style={styles.stationInfo}>
-                <Text style={styles.stationNameText} numberOfLines={1}>{station.name}</Text>
-                <Text style={styles.stationMetaText}>{station.sensors?.length || 0} Sensors • {station.manufacturer || 'Unknown'}</Text>
-              </View>
-              <View style={[styles.stationTag, { backgroundColor: '#4CAF50' }]}>
-                <Text style={styles.stationTagText}>Live</Text>
-              </View>
-            </View>
-          ))
-        ) : (
-          <Text style={styles.loadingText}>No OpenAQ stations found nearby.</Text>
-        )}
-      </View>
-      
-      {/* 
-      <MapView
-        provider={PROVIDER_GOOGLE}
-        style={styles.map}
-        initialRegion={initialRegion}
-      >
-        <Marker
-          coordinate={{ latitude: 28.6139, longitude: 77.2090 }}
-          title="CP Station"
-          description={`AQI: ${aqiInfo.level}`}
+      {/* The rest of the UI continues below */}
+      <ScrollView style={{ padding: 15, flex: 1, backgroundColor: '#F5F7FA' }}>
+         <TouchableOpacity 
+          style={styles.waqiButton}
+          onPress={() => WebBrowser.openBrowserAsync('https://waqi.info/#/c/28.613/77.209/10z')}
         >
-          <View style={[styles.marker, { backgroundColor: aqiInfo.color }]}>
-            <Text style={styles.markerText}>42</Text>
-          </View>
-        </Marker>
-      </MapView>
-      */}
-      
-      <View style={[styles.overlay, {top: 150}]}>
-        <Text style={styles.overlayTitle}>Live Pollution Map</Text>
-        <Text style={styles.overlaySubtitle}>Delhi NCR Region</Text>
-      </View>
+          <Text style={styles.waqiButtonText}>Open More Details in WAQI Live Map</Text>
+        </TouchableOpacity>
+        
+        {/* Nearby Stations List */}
+        <View style={styles.stationsListContainer}>
+          <Text style={styles.listTitle}>Nearby OpenAQ Stations</Text>
+          {loading ? (
+            <Text style={styles.loadingText}>Searching for stations...</Text>
+          ) : nearbyStations.length > 0 ? (
+            nearbyStations.slice(0, 5).map((station, index) => (
+              <View key={index} style={styles.stationItem}>
+                <View style={styles.stationInfo}>
+                  <Text style={styles.stationNameText} numberOfLines={1}>{station.name}</Text>
+                  <Text style={styles.stationMetaText}>{station.sensors?.length || 0} Sensors • {station.manufacturer || 'Unknown'}</Text>
+                </View>
+                <View style={[styles.stationTag, { backgroundColor: '#4CAF50' }]}>
+                  <Text style={styles.stationTagText}>Live</Text>
+                </View>
+              </View>
+            ))
+          ) : (
+            <Text style={styles.loadingText}>No OpenAQ stations found nearby.</Text>
+          )}
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -124,58 +78,15 @@ export default function MapScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  webPlaceholder: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5F7FA',
-    padding: 40,
-  },
-  map: {
-    flex: 1,
-  },
-  marker: {
-    padding: 8,
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: 'white',
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  markerText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 12,
-  },
-  overlay: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    backgroundColor: 'white',
-    padding: 15,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 5,
-  },
-  overlayTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  overlaySubtitle: {
-    fontSize: 12,
-    color: '#666',
+    backgroundColor: '#fff',
   },
   waqiButton: {
     backgroundColor: '#00B0FF',
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
     paddingVertical: 14,
-    borderRadius: 30,
+    borderRadius: 12,
+    marginTop: 10,
+    alignItems: 'center',
     shadowColor: '#00B0FF',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
@@ -184,26 +95,27 @@ const styles = StyleSheet.create({
   },
   waqiButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: 'bold',
   },
   stationsListContainer: {
-    width: '100%',
-    marginTop: 30,
+    flex: 1,
+    marginTop: 25,
     backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 20,
+    borderRadius: 15,
+    padding: 15,
+    marginBottom: 40,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.05,
     shadowRadius: 10,
-    elevation: 3,
+    elevation: 2,
   },
   listTitle: {
     fontSize: 14,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 15,
+    marginBottom: 10,
     textTransform: 'uppercase',
   },
   loadingText: {

@@ -28,6 +28,94 @@ On top of the data platform, we are integrating machine learning models for poll
 ### 3. RAG-Based Personalized AI Assistant
 We are developing a Retrieval-Augmented Generation (RAG)-based AI assistant that provides personalized air-quality insights and actionable recommendations. This assistant leverages **13+ data sources** (including environmental data, weather conditions, recent environmental news, population density, hospital data, human surveys, and urban infrastructure data) to generate highly context-aware guidance for users.
 
+#### System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     DATA INGESTION LAYER                     │
+├──────────────┬──────────────┬──────────────┬────────────────┤
+│  Real-time   │   Hourly     │    Daily     │    Static      │
+│  Collectors  │  Collectors  │  Collectors  │   Loaders      │
+│              │              │              │                │
+│ • OpenAQ     │ • Weather    │ • News       │ • Population   │
+│ • User input │ • Traffic    │ • NASA sat.  │ • OSM infra.   │
+│ • Surveys    │ • Sentiment  │ • Hospital   │ • Census data  │
+└──────┬───────┴──────┬───────┴──────┬───────┴───────┬────────┘
+       │              │              │               │
+       ▼              ▼              ▼               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   PROCESSING LAYER                           │
+│                                                             │
+│  ┌─────────────────┐    ┌──────────────────────────────┐   │
+│  │ Structured Data  │    │    Unstructured Data          │   │
+│  │ Processor        │    │    Processor                  │   │
+│  │                 │    │                               │   │
+│  │ • Normalize AQI │    │ • Chunk news articles (512t)  │   │
+│  │ • Geo-tag data  │    │ • Extract survey insights     │   │
+│  │ • Time-align    │    │ • Summarize hospital reports  │   │
+│  └────────┬────────┘    └──────────────┬────────────────┘   │
+└───────────┼──────────────────────────┼──────────────────────┘
+            │                          │
+            ▼                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    STORAGE LAYER (Supabase)                  │
+│                                                             │
+│  ┌────────────────┐    ┌───────────────────────────────┐   │
+│  │  PostgreSQL     │    │   pgvector (Vector Store)     │   │
+│  │  (structured)   │    │                               │   │
+│  │                │    │  • News embeddings            │   │
+│  │  • AQI readings│    │  • Survey embeddings          │   │
+│  │  • Weather logs│    │  • Hospital report embeddings │   │
+│  │  • Station meta│    │  • Social sentiment vectors   │   │
+│  │  • User data   │    │  • Infrastructure chunks      │   │
+│  └────────────────┘    └───────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
+            │                          │
+            ▼                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    RAG QUERY ENGINE                          │
+│                                                             │
+│  User Query + Location + Profile                            │
+│       │                                                     │
+│       ├─► Structured Retrieval ──► SQL queries to Postgres  │
+│       │   (AQI, weather, traffic, hospital)                 │
+│       │                                                     │
+│       ├─► Semantic Retrieval ────► pgvector similarity      │
+│       │   (news, surveys, reports, sentiment)               │
+│       │                                                     │
+│       └─► Geo-Spatial Filter ───► PostGIS radius queries    │
+│           (only data near user's location)                  │
+│                          │                                  │
+│                          ▼                                  │
+│              Context Assembly (structured prompt)           │
+└─────────────────────────────────────────────────────────────┘
+            │
+            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    LLM LAYER                                │
+│                                                             │
+│  Gemini 1.5 Flash / Groq Llama 3.1                         │
+│                                                             │
+│  System: "You are AtmoPulse AI, an air quality health      │
+│  advisor for Delhi NCR. Use ONLY the provided context..."  │
+│                                                             │
+│  Context: [AQI][Weather][News][Hospital][Surveys][Infra]   │
+│                                                             │
+│  Output: Structured JSON guidance                           │
+└─────────────────────────────────────────────────────────────┘
+            │
+            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   RESPONSE LAYER (Mobile App)               │
+│                                                             │
+│  • Health risk score (1–10)                                │
+│  • Personalized activity guidance                           │
+│  • Nearest safe zone recommendation                         │
+│  • Trend prediction (next 6 hours)                          │
+│  • Alert severity level                                     │
+└─────────────────────────────────────────────────────────────┘
+```
+
 ### 4. Community-Driven Gamification
 A key differentiator of this system is its community-driven approach. The platform operates on a volunteer-based contribution model where users can share their AQI data through the app. To encourage participation, we feature a **gamification system** with:
 * Contribution levels and Badges

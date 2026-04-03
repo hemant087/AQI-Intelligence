@@ -21,24 +21,14 @@ export class LocalStorageService {
 
   private init() {
     if (Platform.OS === 'web') return;
+    
+    // Create base tables
     this.db.execSync(`
       CREATE TABLE IF NOT EXISTS readings (
         id TEXT PRIMARY KEY NOT NULL,
         deviceId TEXT NOT NULL,
         timestamp TEXT NOT NULL,
-        pm25 REAL NOT NULL,
-        pm10 REAL,
-        o3 REAL,
-        no2 REAL,
-        so2 REAL,
-        co REAL,
-        sourceType TEXT NOT NULL,
-        latitude REAL,
-        longitude REAL,
-        contextTag TEXT,
-        manufacturer TEXT,
-        model TEXT,
-        owner TEXT
+        pm25 REAL NOT NULL
       );
       CREATE TABLE IF NOT EXISTS government_stations (
         uid INTEGER PRIMARY KEY NOT NULL,
@@ -62,6 +52,22 @@ export class LocalStorageService {
         fetchedAt TEXT NOT NULL
       );
     `);
+
+    // Safely migrate existing databases securely by adding new columns one by one
+    // if the table was created in an older version of the app.
+    const columnsToAdd = [
+      'pm10 REAL', 'o3 REAL', 'no2 REAL', 'so2 REAL', 'co REAL',
+      'sourceType TEXT DEFAULT "unknown"', 'latitude REAL', 'longitude REAL',
+      'contextTag TEXT', 'manufacturer TEXT', 'model TEXT', 'owner TEXT'
+    ];
+
+    for (const column of columnsToAdd) {
+      try {
+        this.db.execSync(`ALTER TABLE readings ADD COLUMN ${column};`);
+      } catch (e) {
+        // If it throws, the column probably already exists, which is totally fine.
+      }
+    }
   }
 
   async insertGovernmentStation(station: any): Promise<void> {

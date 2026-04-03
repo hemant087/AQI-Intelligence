@@ -224,11 +224,19 @@ def sync_latest_data(rows, locations):
     supabase_upsert("readings", reading_rows, "id")
 
 def main():
-    log("🚀 Pipeline V5 starting...")
-    rows, locations = sync_stations()
-    if locations:
-        sync_latest_data(rows, locations)
-    log("✅ Pipeline run finished. AQI data now synced.")
+    log("🚀 Pipeline V5 starting continuous sync mode (10-min intervals)...")
+    while True:
+        try:
+            log("--- Starting new sync cycle ---")
+            rows, locations = sync_stations()
+            if locations:
+                sync_latest_data(rows, locations)
+            log("✅ Sync cycle finished. AQI data is up to date.")
+        except Exception as e:
+            log(f"❌ Critical error during pipeline iteration: {e}")
+        
+        log("⏳ Waiting 10 minutes for the next sync...")
+        time.sleep(600)  # Sleep for 10 minutes (600 seconds)
 
 if __name__ == "__main__":
     main()
