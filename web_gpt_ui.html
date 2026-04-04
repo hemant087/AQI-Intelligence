@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AtmoPulse AI - Web Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+        body { 
+            background-color: #212121; 
+            color: #ececec; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden;
+        }
+        
+        /* Top Navigation Header */
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 16px 24px; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            z-index: 10;
+        }
+        .header-title { 
+            font-size: 18px; 
+            font-weight: 500; 
+            color: #ececec; 
+            display: flex; 
+            align-items: center; 
+            gap: 4px;
+            cursor: pointer;
+        }
+        .header-icons { 
+            display: flex; 
+            gap: 16px; 
+            font-size: 20px; 
+            color: #c5c5c5;
+        }
+        .icon { cursor: pointer; transition: color 0.2s; }
+        .icon:hover { color: #fff; }
+
+        /* Main Content Container */
+        .main-container { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            width: 100%; 
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            height: 100%;
+            margin: 0 auto;
+        }
+        
+        /* Chat History Area (Hidden Initially) */
+        .chat-area { 
+            flex: 1; 
+            width: 100%; 
+            overflow-y: auto; 
+            padding-top: 80px; 
+            padding-bottom: 140px; 
+            display: none; 
+            flex-direction: column; 
+            gap: 30px;
+            scrollbar-width: thin;
+            scrollbar-color: #555 #212121;
+        }
+        
+        .chat-area::-webkit-scrollbar { width: 8px; }
+        .chat-area::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
+        
+        .message-row { display: flex; width: 100%; }
+        .message-row.user { justify-content: flex-end; }
+        .user-bubble { 
+            background: #2f2f2f; 
+            padding: 12px 20px; 
+            border-radius: 20px; 
+            color: #ececec;
+            max-width: 70%;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        .ai-bubble { 
+            display: flex; 
+            gap: 16px; 
+            max-width: 90%; 
+            color: #ececec;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        .ai-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 15px;
+            background: #10b981;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+        
+        /* Title (Visible Initially) */
+        .title-area { 
+            text-align: center; 
+            margin-bottom: 40px; 
+            transition: all 0.3s ease;
+        }
+        .title-area h1 { 
+            font-size: 32px; 
+            font-weight: 500; 
+            color: #ffffff;
+        }
+
+        /* Input Controls Area */
+        .interactions-wrapper {
+            width: 100%;
+            max-width: 760px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: absolute;
+            bottom: 50%;
+            transform: translateY(50%);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            padding: 0 20px;
+        }
+
+        .input-box {
+            width: 100%;
+            background: #2f2f2f;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            border: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+        .input-box:focus-within {
+            border-color: #555;
+        }
+
+        .attach-btn, .voice-btn { 
+            color: #b4b4b4; 
+            cursor: pointer; 
+            font-size: 24px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            width: 36px; 
+            height: 36px; 
+            border-radius: 50%; 
+            transition: color 0.1s;
+            font-weight: 300;
+        }
+        .attach-btn:hover, .voice-btn:hover { color: #fff; }
+        
+        .input-box input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 16px;
+            padding: 0 12px;
+            outline: none;
+        }
+        .input-box input::placeholder { color: #888; font-weight: 400;}
+        
+        .send-btn { 
+            background: white; 
+            color: black; 
+            border: none; 
+            border-radius: 50%; 
+            width: 32px; 
+            height: 32px; 
+            display: none; 
+            justify-content: center; 
+            align-items: center; 
+            cursor: pointer; 
+            font-size: 18px;
+        }
+
+        /* Suggestions Pills */
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        
+        .pill {
+            border: 1px solid #444;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            color: #d1d5db;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s, color 0.2s;
+            font-weight: 400;
+        }
+        .pill:hover { 
+            background: #2f2f2f; 
+            color: #fff;
+        }
+
+        .disclaimer {
+            font-size: 12px;
+            color: #777;
+            position: absolute;
+            bottom: -30px;
+        }
+
+        /* State Changes when chat is active */
+        body.chat-active .title-area { display: none; }
+        body.chat-active .suggestions { display: none; }
+        body.chat-active .chat-area { display: flex; }
+        body.chat-active .interactions-wrapper {
+            bottom: 40px;
+            transform: translateY(0);
+        }
+        body.chat-active .disclaimer { display: block; }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-title">AtmoPulse <span style="color: #666; font-size: 14px; margin-left: 2px;">⌵</span></div>
+        <div class="header-icons">
+            <span class="icon">👤</span>
+            <span class="icon" onclick="resetChat()" style="font-size: 18px;" title="New Chat">🔄</span>
+        </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="main-container">
+        
+        <div class="chat-container">
+            
+            <div class="title-area" id="main-title">
+                <h1>What's the air quality like today?</h1>
+            </div>
+
+            <div class="chat-area" id="chat-box">
+                <!-- Chat Bubbles -> Injected Dynamically -->
+            </div>
+
+            <div class="interactions-wrapper" id="interactions">
+                <div class="input-box">
+                    <div class="attach-btn" title="Add location context">+</div>
+                    <input type="text" id="ai-input" placeholder="Ask anything..." oninput="toggleSendBtn()" onkeypress="handleEnter(event)">
+                    <div class="voice-btn" id="mic-icon" title="Voice Search">🎤</div>
+                    <button class="send-btn" id="send-btn" onclick="askAI()">➤</button>
+                </div>
+
+                <div class="suggestions">
+                    <div class="pill" onclick="setAIQuestion('How is the PM 2.5 in Delhi currently?')">
+                        <span style="color: #3b82f6;">🌎</span> Look up current data
+                    </div>
+                    <div class="pill" onclick="setAIQuestion('Create a daily exposure report for me')">
+                        <span style="color: #10b981;">📝</span> Write a health report
+                    </div>
+                    <div class="pill" onclick="setAIQuestion('Is it safe to go jogging outdoors?')">
+                        <span style="color: #f59e0b;">🏃‍♂️</span> Check exercise safety
+                    </div>
+                </div>
+
+                <div class="disclaimer" style="display: none;" id="disclaimer">
+                    AtmoPulse AI can make mistakes. Consider verifying safety guidelines before exercising.
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        const inputField = document.getElementById('ai-input');
+        const sendBtn = document.getElementById('send-btn');
+        const micIcon = document.getElementById('mic-icon');
+        const chatBox = document.getElementById('chat-box');
+
+        function toggleSendBtn() {
+            if(inputField.value.trim().length > 0) {
+                sendBtn.style.display = 'flex';
+                micIcon.style.display = 'none';
+            } else {
+                sendBtn.style.display = 'none';
+                micIcon.style.display = 'flex';
+            }
+        }
+
+        function handleEnter(e) {
+            if(e.key === 'Enter') askAI();
+        }
+
+        function setAIQuestion(q) {
+            inputField.value = q;
+            toggleSendBtn();
+            inputField.focus();
+        }
+
+        function resetChat() {
+            document.body.classList.remove('chat-active');
+            chatBox.innerHTML = '';
+            inputField.value = '';
+            toggleSendBtn();
+        }
+
+        async function askAI() {
+            const question = inputField.value.trim();
+            if (!question) return;
+
+            // Transition to chat layout
+            if(!document.body.classList.contains('chat-active')) {
+                document.body.classList.add('chat-active');
+            }
+
+            // Append User Message
+            const userHTML = `
+                <div class="message-row user">
+                    <div class="user-bubble">${question}</div>
+                </div>
+            `;
+            chatBox.innerHTML += userHTML;
+            inputField.value = '';
+            toggleSendBtn();
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Loading Indicator
+            const loadingId = 'loading-' + Date.now();
+            const loadingHTML = `
+                <div class="message-row" id="${loadingId}">
+                    <div class="ai-bubble">
+                        <div class="ai-avatar">🤖</div>
+                        <div style="padding-top: 4px; font-style: italic; color: #888;">Thinking...</div>
+                    </div>
+                </div>
+            `;
+            chatBox.innerHTML += loadingHTML;
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                // Call local Ollama logic
+                const response = await fetch('http://localhost:11434/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: 'llama3.1:8b',
+                        messages: [
+                            { role: 'system', content: 'You are an advanced Air Quality Intelligence Assistant (AtmoPulse). Keep answers helpful and direct.' },
+                            { role: 'user', content: question }
+                        ],
+                        stream: false
+                    })
+                });
+
+                if (!response.ok) throw new Error('Ollama not reachable');
+                
+                const data = await response.json();
+                document.getElementById(loadingId).remove();
+                
+                // Append AI Response
+                const formattedAnswer = data.message.content.replace(/\n/g, '<br>');
+                const aiHTML = `
+                    <div class="message-row">
+                        <div class="ai-bubble">
+                            <div class="ai-avatar">🤖</div>
+                            <div style="padding-top: 4px;">${formattedAnswer}</div>
+                        </div>
+                    </div>
+                `;
+                chatBox.innerHTML += aiHTML;
+            } catch (err) {
+                console.error(err);
+                document.getElementById(loadingId).remove();
+                
+                const errorHTML = `
+                    <div class="message-row">
+                        <div class="ai-bubble">
+                            <div class="ai-avatar" style="background:#ef4444;">⚠️</div>
+                            <div style="padding-top: 4px; color: #ef4444;">
+                                <strong>Connection Error:</strong> Could not reach local Ollama LLM.<br>
+                                Please ensure Ollama is running at <code>localhost:11434</code> with <code>OLLAMA_ORIGINS="*"</code>.
+                            </div>
+                        </div>
+                    </div>
+                `;
+                chatBox.innerHTML += errorHTML;
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image, Linking, SafeAreaView, ActivityIndicator, RefreshControl } from 'react-native';
+import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image, Linking, SafeAreaView, ActivityIndicator, RefreshControl, useWindowDimensions } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { newsService } from '../../src/services/NewsService';
 import { NewsArticle } from '../../src/models/NewsArticle';
@@ -8,6 +8,10 @@ export default function NewsScreen() {
   const [news, setNews] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const { width } = useWindowDimensions();
+
+  // Dynamic grid column configuration
+  const numColumns = width > 1024 ? 4 : width > 768 ? 3 : 2;
 
   const loadNews = async (isRefresh = false) => {
     if (!isRefresh) setLoading(true);
@@ -50,7 +54,9 @@ export default function NewsScreen() {
         </View>
       ) : (
         <FlatList
+          key={numColumns} // Forces re-render when columns change
           data={news}
+          numColumns={numColumns}
           keyExtractor={(item) => item.id}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -61,19 +67,26 @@ export default function NewsScreen() {
               activeOpacity={0.9}
               onPress={() => openArticle(item.url)}
             >
-              {item.imageUrl && (
-                <Image source={{ uri: item.imageUrl }} style={styles.cardImage} />
-              )}
+              <View style={styles.imageContainer}>
+                {item.imageUrl ? (
+                  <Image source={{ uri: item.imageUrl }} style={styles.cardImage} resizeMode="cover" />
+                ) : (
+                  <View style={[styles.cardImage, { justifyContent: 'center', alignItems: 'center' }]}>
+                    <MaterialCommunityIcons name="image-off" size={32} color="#ccc" />
+                  </View>
+                )}
+              </View>
               <View style={styles.cardContent}>
-                <View style={styles.sourceRow}>
-                  <Text style={styles.sourceText}>{item.source}</Text>
-                  <Text style={styles.dateText}>{new Date(item.publishedAt).toLocaleDateString()}</Text>
+                <View>
+                  <View style={styles.sourceRow}>
+                    <Text style={styles.sourceText} numberOfLines={1}>{item.source}</Text>
+                    <Text style={styles.dateText}>{new Date(item.publishedAt).toLocaleDateString()}</Text>
+                  </View>
+                  <Text style={styles.articleTitle} numberOfLines={3}>{item.title}</Text>
                 </View>
-                <Text style={styles.articleTitle} numberOfLines={2}>{item.title}</Text>
-                <Text style={styles.articleDesc} numberOfLines={3}>{item.description}</Text>
                 <View style={styles.cardFooter}>
                   <Text style={styles.readMore}>Read Full Story</Text>
-                  <MaterialCommunityIcons name="chevron-right" size={20} color="#00B0FF" />
+                  <MaterialCommunityIcons name="chevron-right" size={16} color="#00B0FF" />
                 </View>
               </View>
             </TouchableOpacity>
@@ -113,12 +126,14 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   listContent: {
-    padding: 16,
+    padding: 8,
   },
   newsCard: {
     backgroundColor: 'white',
     borderRadius: 16,
-    marginBottom: 20,
+    margin: 8,
+    flex: 1,
+    aspectRatio: 1, // Ensures a perfect square
     overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -126,49 +141,51 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 3,
   },
+  imageContainer: {
+    width: '100%',
+    height: '45%',
+  },
   cardImage: {
     width: '100%',
-    height: 180,
+    height: '100%',
     backgroundColor: '#eee',
   },
   cardContent: {
-    padding: 16,
+    padding: 12,
+    flex: 1,
+    justifyContent: 'space-between',
   },
   sourceRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   sourceText: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 'bold',
     color: '#00B0FF',
     textTransform: 'uppercase',
+    flex: 1,
   },
   dateText: {
-    fontSize: 12,
+    fontSize: 10,
     color: '#999',
+    marginLeft: 4,
   },
   articleTitle: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#333',
-    lineHeight: 24,
-    marginBottom: 8,
-  },
-  articleDesc: {
-    fontSize: 14,
-    color: '#666',
     lineHeight: 20,
-    marginBottom: 12,
   },
   cardFooter: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
+    marginTop: 10,
   },
   readMore: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#00B0FF',
     fontWeight: 'bold',
   },

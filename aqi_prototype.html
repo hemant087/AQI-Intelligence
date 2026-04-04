@@ -170,34 +170,70 @@
             <div style="width:40px;height:40px;border-radius:20px;background: linear-gradient(135deg, #38bdf8, #818cf8);"></div>
         </div>
 
-        <div class="main-indicator">
-            <div class="pm-label">PM 2.5 Index</div>
-            <div class="pm-value">164</div>
-            <div class="pm-status">Unhealthy</div>
-        </div>
+        <div id="dashboard-view">
+            <div class="main-indicator">
+                <div class="pm-label">PM 2.5 Index</div>
+                <div class="pm-value">164</div>
+                <div class="pm-status">Unhealthy</div>
+            </div>
 
-        <div class="cards">
-            <div class="card">
-                <div class="icon-box ic-health">♥</div>
-                <div class="card-content">
-                    <h3>Personal Exposure</h3>
-                    <p>Your average exposure today is entering the hazardous zone. Recommend staying indoors.</p>
+            <div class="cards">
+                <div class="card">
+                    <div class="icon-box ic-health">♥</div>
+                    <div class="card-content">
+                        <h3>Personal Exposure</h3>
+                        <p>Your average exposure today is entering the hazardous zone. Recommend staying indoors.</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="icon-box ic-device">⚇</div>
+                    <div class="card-content">
+                        <h3>Active Devices</h3>
+                        <p>Bluetooth Monitor is connected. 4 pending records synced to the cloud.</p>
+                    </div>
                 </div>
             </div>
+        </div>
+
+        <div id="ai-view" style="display: none; flex: 1; flex-direction: column; padding: 20px 24px; position: relative;">
+            <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+                <h3 style="font-size: 16px; font-weight: 600; color: #f8fafc;">AtmoPulse AI</h3>
+            </div>
             
-            <div class="card">
-                <div class="icon-box ic-device">⚇</div>
-                <div class="card-content">
-                    <h3>Active Devices</h3>
-                    <p>Bluetooth Monitor is connected. 4 pending records synced to the cloud.</p>
+            <div id="ai-chat-box" style="flex: 1; overflow-y: auto; font-size: 14px; line-height: 1.6; padding-bottom: 10px;">
+                <!-- Initial AI message -->
+                <div style="display: flex; margin-bottom: 20px;">
+                    <div style="width: 28px; height: 28px; border-radius: 14px; background: #0ea5e9; display: flex; justify-content: center; align-items: center; margin-right: 12px; flex-shrink: 0; font-size: 14px;">🤖</div>
+                    <div style="flex: 1; color: #e2e8f0; padding-top: 2px;">
+                        Hello! I am your AtmoPulse AI assistant. Ask me anything about the air quality around you.
+                    </div>
                 </div>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    <span onclick="setAIQuestion('Is it safe to go jogging?')" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 16px; font-size: 12px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; transition: all 0.2s;">🏃‍♂️ Jogging safe?</span>
+                    <span onclick="setAIQuestion('Why is AQI so high?')" style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 16px; font-size: 12px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; transition: all 0.2s;">🤔 Why so high?</span>
+                </div>
+            </div>
+
+            <div style="position: relative; display: flex; align-items: center; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 4px; backdrop-filter: blur(10px);">
+                <input type="text" id="ai-input" placeholder="Message AtmoPulse AI..." style="flex: 1; background: transparent; border: none; padding: 10px 15px; color: white; outline: none; font-size: 14px;">
+                <button onclick="askAI()" style="background: white; color: black; border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; justify-content: center; align-items: center; cursor: pointer; margin-right: 4px;">
+                    <span style="font-size: 16px; transform: rotate(-90deg);">➤</span>
+                </button>
             </div>
         </div>
 
         <div class="nav">
-            <div class="nav-item active">
+            <div class="nav-item active" onclick="switchTab('dashboard')">
                 <span class="nav-icon">⌂</span>
                 <span>Dashboard</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('ai')">
+                <span class="nav-icon">🤖</span>
+                <span>AI Intel</span>
             </div>
             <div class="nav-item">
                 <span class="nav-icon">🗺</span>
@@ -207,12 +243,98 @@
                 <span class="nav-icon">⚇</span>
                 <span>Devices</span>
             </div>
-            <div class="nav-item">
-                <span class="nav-icon">✧</span>
-                <span>Impact</span>
-            </div>
         </div>
     </div>
 
-</body>
-</html>
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('dashboard-view').style.display = 'none';
+            document.getElementById('ai-view').style.display = 'none';
+            
+            if(tabId === 'dashboard') {
+                document.querySelectorAll('.nav-item')[0].classList.add('active');
+                document.getElementById('dashboard-view').style.display = 'block';
+            } else if(tabId === 'ai') {
+                document.querySelectorAll('.nav-item')[1].classList.add('active');
+                document.getElementById('ai-view').style.display = 'flex';
+            }
+        }
+
+        function setAIQuestion(q) {
+            document.getElementById('ai-input').value = q;
+        }
+
+        async function askAI() {
+            const input = document.getElementById('ai-input');
+            const chatBox = document.getElementById('ai-chat-box');
+            const question = input.value.trim();
+            if (!question) return;
+
+            // Add user message (right-aligned bubble)
+            const userHtml = `
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                    <div style="background: #0ea5e9; color: white; padding: 10px 15px; border-radius: 18px; border-bottom-right-radius: 4px; max-width: 80%;">
+                        ${question}
+                    </div>
+                </div>`;
+            chatBox.innerHTML += userHtml;
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Add loading indicator
+            const loadingId = 'loading-' + Date.now();
+            const loadingHtml = `
+                <div id="${loadingId}" style="display: flex; margin-bottom: 20px;">
+                    <div style="width: 28px; height: 28px; border-radius: 14px; background: #0ea5e9; display: flex; justify-content: center; align-items: center; margin-right: 12px; flex-shrink: 0; font-size: 14px;">🤖</div>
+                    <div style="flex: 1; color: #94a3b8; padding-top: 2px; font-style: italic;">
+                        Thinking...
+                    </div>
+                </div>`;
+            chatBox.innerHTML += loadingHtml;
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                // Call local Ollama LLM directly from browser (requires Ollama to allow CORS: OLLAMA_ORIGINS="*")
+                const response = await fetch('http://localhost:11434/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: 'llama3.1:8b', // Using your specific local model
+                        messages: [
+                            { role: 'system', content: 'You are AtmoPulse AI. Keep answers very brief, max 2 sentences.' },
+                            { role: 'user', content: question }
+                        ],
+                        stream: false
+                    })
+                });
+
+                if (!response.ok) throw new Error('Ollama not reachable');
+                
+                const data = await response.json();
+                document.getElementById(loadingId).remove();
+                
+                const aiResponseHtml = `
+                    <div style="display: flex; margin-bottom: 20px;">
+                        <div style="width: 28px; height: 28px; border-radius: 14px; background: #0ea5e9; display: flex; justify-content: center; align-items: center; margin-right: 12px; flex-shrink: 0; font-size: 14px;">🤖</div>
+                        <div style="flex: 1; color: #e2e8f0; padding-top: 2px;">
+                            ${data.message.content.replace(/\\n/g, '<br>')}
+                        </div>
+                    </div>`;
+                chatBox.innerHTML += aiResponseHtml;
+                
+            } catch (err) {
+                console.error(err);
+                document.getElementById(loadingId).remove();
+                const errorHtml = `
+                    <div style="display: flex; margin-bottom: 20px;">
+                        <div style="width: 28px; height: 28px; border-radius: 14px; background: #ef4444; display: flex; justify-content: center; align-items: center; margin-right: 12px; flex-shrink: 0; font-size: 14px;">⚠️</div>
+                        <div style="flex: 1; color: #ef4444; padding-top: 2px;">
+                            Could not connect to local Ollama LLM. Please make sure it is running at localhost:11434 and CORS is enabled via OLLAMA_ORIGINS="*".
+                        </div>
+                    </div>`;
+                chatBox.innerHTML += errorHtml;
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>

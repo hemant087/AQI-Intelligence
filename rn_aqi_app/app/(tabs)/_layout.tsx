@@ -30,6 +30,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="ai"
+        options={{
+          title: 'AI Intel',
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="robot-outline" size={28} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="stations"
         options={{
           title: 'Official',
